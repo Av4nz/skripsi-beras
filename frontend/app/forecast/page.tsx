@@ -12,6 +12,7 @@ import { apiService } from "@/services/api";
 import { HargaBerasSchema, StepDetail } from "@/types/api";
 import { Loader2, Settings2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "sonner";
 
 export default function ForecastPage() {
   const [historicalData, setHistoricalData] = useState<HargaBerasSchema[]>([]);
@@ -34,6 +35,7 @@ export default function ForecastPage() {
         setHistoricalData(hist.slice(-12)); // Last 12 months for chart context
       } catch (error) {
         console.error("Failed to load historical data", error);
+        toast.error("Gagal memuat data historis dari server");
       } finally {
         setInitialLoading(false);
       }
@@ -56,8 +58,10 @@ export default function ForecastPage() {
         }
       });
       setPredictions(result.details?.steps || []);
+      toast.success("Simulasi berhasil dijalankan");
     } catch (error) {
       console.error("Prediction failed", error);
+      toast.error("Gagal menjalankan simulasi prediksi");
     } finally {
       setLoading(false);
     }
@@ -106,6 +110,7 @@ export default function ForecastPage() {
                   <Label>Harga GKG Rata-rata (Rp)</Label>
                   <Input 
                     type="number" 
+                    min={0}
                     value={gkgPrice} 
                     onChange={(e) => setGkgPrice(Number(e.target.value))} 
                   />
@@ -115,6 +120,7 @@ export default function ForecastPage() {
                   <Label>Curah Hujan (mm)</Label>
                   <Input 
                     type="number" 
+                    min={0}
                     value={rainfall} 
                     onChange={(e) => setRainfall(Number(e.target.value))} 
                   />
@@ -124,6 +130,7 @@ export default function ForecastPage() {
                   <Label>Estimasi Produksi Padi (Ton)</Label>
                   <Input 
                     type="number" 
+                    min={0}
                     value={production} 
                     onChange={(e) => setProduction(Number(e.target.value))} 
                   />

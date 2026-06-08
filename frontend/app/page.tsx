@@ -11,6 +11,7 @@ export default async function Home() {
   let metricsData: MetricsSchema[] = [];
   let historical: HargaBerasSchema[] = [];
   let predictionsResult: Partial<PredictionResponse> = { details: { steps: [] } };
+  let hasError = false;
 
   try {
     metricsData = await apiService.getMetrics();
@@ -27,6 +28,21 @@ export default async function Home() {
     });
   } catch (error) {
     console.error("Failed to fetch data from backend:", error);
+    hasError = true;
+  }
+  
+  if (hasError) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[60vh]">
+        <div className="rounded-full bg-destructive/10 p-4 mb-4">
+          <Activity className="h-8 w-8 text-destructive" />
+        </div>
+        <h2 className="text-2xl font-semibold mb-2">Gagal Memuat Data Server</h2>
+        <p className="text-muted-foreground max-w-md">
+          Terjadi kesalahan saat mengambil data dari backend. Pastikan server backend FastAPI berjalan di <code className="bg-muted px-1 py-0.5 rounded">http://localhost:8000</code>.
+        </p>
+      </div>
+    );
   }
   
   // Sort metrics by MAPE ascending to automatically display the best performing model (Tuned Hybrid)
