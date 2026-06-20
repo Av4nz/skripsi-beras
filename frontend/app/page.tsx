@@ -119,13 +119,18 @@ export default async function Home() {
   return (
     <div className="flex flex-col gap-8">
       {/* Hero Section */}
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-2 relative">
         <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Sistem Prediksi Harga Beras Medium II
         </h1>
         <p className="text-muted-foreground text-lg max-w-3xl">
           Prediksi harga beras di DI Yogyakarta berbasis Hybrid Model Prophet dan XGBoost untuk mendukung ketahanan pangan daerah.
         </p>
+        <div className="text-sm text-muted-foreground/80 mt-1 flex flex-col gap-0.5 sm:flex-row sm:gap-4 font-medium">
+          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Data historis: Januari 2021 – November 2025</span>
+          <span className="hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Terakhir diperbarui: November 2025</span>
+        </div>
       </section>
 
       {/* Metrics Cards */}
@@ -143,20 +148,21 @@ export default async function Home() {
           value={`${metrics.mape}%`}
           description="Mean Absolute Percentage Error"
           icon={<Target className="h-4 w-4 text-chart-4" />}
-          trend="down"
-          trendValue="0.2%"
+          tooltip="Mean Absolute Percentage Error. Menunjukkan rata-rata persentase kesalahan prediksi. Semakin kecil nilainya maka model semakin akurat."
         />
         <MetricCard
           title="MAE (Error Absolut)"
           value={`Rp ${metrics.mae}`}
           description="Mean Absolute Error"
           icon={<Activity className="h-4 w-4 text-chart-3" />}
+          tooltip="Mean Absolute Error. Menunjukkan rata-rata selisih absolut antara hasil prediksi dan harga aktual."
         />
         <MetricCard
           title="RMSE (Root Mean Square)"
           value={`Rp ${metrics.rmse}`}
           description="Root Mean Square Error"
           icon={<TrendingUp className="h-4 w-4 text-chart-2" />}
+          tooltip="Root Mean Square Error. Mengukur besarnya kesalahan prediksi dengan penalti lebih besar untuk error yang tinggi."
         />
       </section>
 
@@ -187,6 +193,7 @@ export default async function Home() {
               <p className="text-sm text-muted-foreground">
                 {priceInsightDesc}
               </p>
+              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
             </CardContent>
           </Card>
 
@@ -201,6 +208,7 @@ export default async function Home() {
               <p className="text-sm text-muted-foreground">
                 {rainfallDesc}
               </p>
+              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
             </CardContent>
           </Card>
 
@@ -215,6 +223,7 @@ export default async function Home() {
               <p className="text-sm text-muted-foreground">
                 {inflationDesc}
               </p>
+              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
             </CardContent>
           </Card>
         </div>

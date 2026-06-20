@@ -7,8 +7,9 @@ import { HistoricalChart } from "@/components/charts/HistoricalChart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function HistoricalPage() {
   const [data, setData] = useState<HargaBerasSchema[]>([]);
@@ -27,6 +28,7 @@ export default function HistoricalPage() {
         setData(hist);
       } catch (error) {
         console.error("Failed to load historical data", error);
+        toast.error("Gagal memuat data historis dari server", { id: "historical-data-error" });
       } finally {
         setLoading(false);
       }
@@ -110,10 +112,16 @@ export default function HistoricalPage() {
       </Card>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <div className="space-y-1">
+        <CardHeader className="flex flex-col md:flex-row md:items-start justify-between pb-4 gap-4 space-y-0">
+          <div className="space-y-2">
             <CardTitle>Tabel Dataset Utama</CardTitle>
-            <CardDescription>Menampilkan {filteredData.length} baris data</CardDescription>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground/80 pt-1">
+              <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5"/> Jumlah data: 59 data</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Periode data: Januari 2021 – November 2025</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Frekuensi data: Bulanan</span>
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <div className="relative">

@@ -16,7 +16,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col border-r bg-card/50 backdrop-blur-sm px-4 py-6">
+    <aside className="hidden lg:flex w-64 flex-col border-r bg-card/50 backdrop-blur-sm px-4 py-6 sticky top-0 h-screen">
       <div className="flex items-center gap-2 px-2 mb-8">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <LineChart size={18} />

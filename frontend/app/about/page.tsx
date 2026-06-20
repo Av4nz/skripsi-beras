@@ -79,6 +79,64 @@ export default async function AboutPage() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Sumber Data */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Sumber Data</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <div>
+              <p className="font-semibold text-foreground">PIHPS Nasional:</p>
+              <ul className="list-disc pl-5"><li>Digunakan untuk data harga Beras Medium II DI Yogyakarta.</li></ul>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">Badan Pusat Statistik (BPS):</p>
+              <ul className="list-disc pl-5">
+                <li>Digunakan untuk data harga Gabah Kering Giling (GKG).</li>
+                <li>Digunakan untuk data produksi padi.</li>
+                <li>Digunakan untuk data inflasi pangan.</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-semibold text-foreground">NASA POWER:</p>
+              <ul className="list-disc pl-5"><li>Digunakan untuk data curah hujan historis.</li></ul>
+            </div>
+            <p className="mt-4 italic pt-2 border-t">Seluruh data telah melalui proses integrasi dan transformasi sebelum digunakan pada model prediksi.</p>
+          </CardContent>
+        </Card>
+
+        {/* Variabel Prediksi */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Variabel Prediksi</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Harga Gabah Kering Giling (GKG)</li>
+              <li>Curah Hujan</li>
+              <li>Produksi Padi</li>
+              <li>Inflasi Pangan</li>
+              <li>Faktor Musiman Lebaran</li>
+            </ul>
+            <p className="mt-4 italic pt-2 border-t">Variabel tersebut digunakan sebagai faktor eksternal dalam proses prediksi residual menggunakan model XGBoost untuk meningkatkan hasil prediksi Prophet.</p>
+          </CardContent>
+        </Card>
+
+        {/* Keterbatasan Sistem */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>Keterbatasan Sistem</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-muted-foreground">
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Prediksi merupakan estimasi berdasarkan data historis dan variabel eksternal yang tersedia.</li>
+              <li>Perubahan kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat mempengaruhi harga aktual.</li>
+              <li>Faktor eksternal yang tidak tersedia dalam dataset tidak dapat dimodelkan oleh sistem.</li>
+              <li>Hasil prediksi tidak menjamin harga aktual pada masa mendatang.</li>
+            </ul>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Tentang Hybrid Model</CardTitle>
@@ -99,7 +157,7 @@ export default async function AboutPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              Dalam sistem ini, prediksi dilakukan menggunakan teknik <strong>Recursive Multi-step Forecasting</strong>. Untuk memprediksi harga beras hingga 6 bulan ke depan, model memprediksi harga di bulan pertama. Harga prediksi tersebut kemudian digunakan sebagai input (lag) untuk memprediksi harga di bulan kedua, dan seterusnya.
+              Dalam sistem ini, prediksi dilakukan menggunakan teknik <strong>Recursive Multi-step Forecasting</strong>. Untuk memprediksi harga beras hingga 12 bulan ke depan, model memprediksi harga di bulan pertama. Harga prediksi tersebut kemudian digunakan sebagai input (lag) untuk memprediksi harga di bulan kedua, dan seterusnya.
             </p>
             <p>
               Teknik ini memungkinkan kita untuk melihat tren harga jangka menengah tanpa harus melatih model terpisah untuk setiap periode kedepan, meskipun akumulasi error harus diawasi dengan cermat.
