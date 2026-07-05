@@ -6,8 +6,8 @@ from datetime import datetime
 # 1. Konfigurasi Parameter Dasar
 COMMODITY_ID = "1_4"  # Contoh: Beras Kualitas Medium II
 PROV_ID = "15"        # Contoh: DIY
-START_DATE = "2021-01-01"
-END_DATE = "2026-02-22"  # Hari ini
+START_DATE = "2025-12-01"
+END_DATE = "2026-05-31"  # Hari ini
 
 # 2. Header (Penting agar tidak dianggap bot)
 headers = {
@@ -101,7 +101,7 @@ df = pd.DataFrame(all_data, columns=[
     "Tanggal_Loop", "Tanggal", "Provinsi", "Komoditas", "Harga_Rp", "Perubahan_Harga"
 ])
 
-filename = "data_pihps_clean2.csv"
+filename = "beras_2025-2026.csv"
 df.to_csv(filename, index=False)
 
 print(f"\nSelesai! {len(df)} baris data disimpan ke {filename}")

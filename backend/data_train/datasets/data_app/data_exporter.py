@@ -1,14 +1,15 @@
 import pandas as pd
 import os
 
-def select_columns(input_file, output_dir, columns):
+def select_columns(input_file, output_path, columns, rename_dict=None):
     """
-    Reads a CSV file, selects specific columns, and saves the new data.
+    Reads a CSV file, selects specific columns, optionally renames them, and saves the new data.
     
     Args:
         input_file (str): Path to the input CSV file.
-        output_dir (str): Path to the directory where the cleaned file will be saved.
+        output_path (str): Path to the output CSV file or directory.
         columns (list): List of column names to keep.
+        rename_dict (dict, optional): Dictionary mapping old column names to new column names.
     """
     try:
         # Load the data
@@ -26,14 +27,20 @@ def select_columns(input_file, output_dir, columns):
                 raise ValueError(f"Column '{col}' not found in the dataset.")
                 
         # Select the columns
-        filtered_df = df[actual_cols]
+        filtered_df = df[actual_cols].copy()
         
-        # Create output directory if it doesn't exist
-        os.makedirs(output_dir, exist_ok=True)
+        # Rename columns if requested
+        if rename_dict:
+            filtered_df.rename(columns=rename_dict, inplace=True)
         
-        # Determine output filename
-        base_name = os.path.basename(input_file)
-        output_file = os.path.join(output_dir, base_name)
+        # Handle output path (if it ends with .csv, treat it as a file; else, a directory)
+        if output_path.endswith('.csv'):
+            output_file = output_path
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        else:
+            os.makedirs(output_path, exist_ok=True)
+            base_name = os.path.basename(input_file)
+            output_file = os.path.join(output_path, base_name)
         
         # Save the filtered dataframe
         filtered_df.to_csv(output_file, index=False)
@@ -47,10 +54,13 @@ if __name__ == "__main__":
     base_path = os.path.dirname(os.path.abspath(__file__))
     
     # Paths for the specific request
-    input_csv = os.path.join(base_path, "datasets", "raw", "data_beras_diy.csv")
-    output_directory = os.path.join(base_path, "datasets", "processed")
+    input_csv = os.path.join(base_path, "datav2", "beras", "(raw)beras_2025-2026_daily.csv")
+    output_csv = os.path.join(base_path, "datav2", "beras", "beras_2025-2026_daily.csv")
     
     # Columns requested by the user
     cols_to_keep = ["Tanggal_Loop", "Harga_Rp"]
     
-    select_columns(input_csv, output_directory, cols_to_keep)
+    # Renaming mapping
+    rename_mapping = {"Tanggal_Loop": "tanggal", "Harga_Rp": "harga_beras"}
+    
+    select_columns(input_csv, output_csv, cols_to_keep, rename_dict=rename_mapping)

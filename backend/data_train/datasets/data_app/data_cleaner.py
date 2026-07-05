@@ -57,7 +57,8 @@ if __name__ == '__main__':
     base_path = os.path.dirname(os.path.abspath(__file__))
     
     # Input and output paths
-    input_csv = os.path.join(base_path, 'datasets', 'raw', 'data_beras_diy_simple.csv')
-    output_csv = os.path.join(base_path, 'datasets', 'processed', 'data_beras_diy_cleaned.csv')
+    # Using the new structure for datav2/beras
+    input_csv = os.path.join(base_path, 'datav2', 'beras', 'beras_2025-2026_daily.csv')
+    output_csv = os.path.join(base_path, 'datav2', 'beras', 'beras_2025-2026_daily_cleaned.csv')
     
     clean_missing_prices(input_csv, output_csv)
