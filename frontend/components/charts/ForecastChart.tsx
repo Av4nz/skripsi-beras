@@ -90,7 +90,7 @@ export function ForecastChart({ historicalData, predictions = [], height = 400 }
             dx={-10}
           />
           <Tooltip 
-            formatter={(value: any) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value)}
+            formatter={(value) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value))}
             labelFormatter={(label) => formatDate(label as string)}
             contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "8px", color: "var(--card-foreground)" }}
           />

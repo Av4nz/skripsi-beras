@@ -16,14 +16,15 @@ export default async function Home() {
   try {
     metricsData = await apiService.getMetrics();
     historical = await apiService.getHistoricalData();
+    const latestHistorical = historical[historical.length - 1];
     predictionsResult = await apiService.predict({
-      period: 6,
+      period: 9,
       external_features: {
-        harga_gkg: 7800,
-        curah_hujan: 150,
-        produksi_padi: 40000,
-        inflasi_pangan: 0.5,
-        lebaran: 0
+        harga_gkg: latestHistorical?.harga_gkg ?? 7800,
+        curah_hujan: latestHistorical?.curah_hujan ?? 150,
+        produksi_padi: latestHistorical?.produksi_padi ?? 40000,
+        inflasi_pangan: latestHistorical?.inflasi_pangan ?? 0.5,
+        lebaran: latestHistorical?.lebaran ?? 0
       }
     });
   } catch (error) {

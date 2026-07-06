@@ -33,6 +33,15 @@ export default function ForecastPage() {
       try {
         const hist = await apiService.getHistoricalData();
         setHistoricalData(hist.slice(-12)); // Last 12 months for chart context
+        
+        if (hist.length > 0) {
+          const latest = hist[hist.length - 1];
+          if (latest.harga_gkg !== null) setGkgPrice(latest.harga_gkg);
+          if (latest.curah_hujan !== null) setRainfall(latest.curah_hujan);
+          if (latest.produksi_padi !== null) setProduction(latest.produksi_padi);
+          if (latest.inflasi_pangan !== null) setInflation(latest.inflasi_pangan);
+          if (latest.lebaran !== null) setIsLebaran(latest.lebaran === 1);
+        }
       } catch (error) {
         console.error("Failed to load historical data", error);
         toast.error("Gagal memuat data historis dari server", { id: "historical-data-error" });
@@ -103,7 +112,7 @@ export default function ForecastPage() {
                       min={1} 
                       max={12} 
                       step={1} 
-                      onValueChange={(val) => setHorizon(Array.isArray(val) ? val[0] : (val as any)[0] || val as any)} 
+                      onValueChange={(val) => setHorizon(Array.isArray(val) ? val[0] : val)}
                     />
                   </div>
 
@@ -121,6 +130,7 @@ export default function ForecastPage() {
                     <Label>Curah Hujan (mm)</Label>
                     <Input 
                       type="number" 
+                      step="0.01"
                       min={0}
                       value={rainfall} 
                       onChange={(e) => setRainfall(Number(e.target.value))} 
@@ -131,6 +141,7 @@ export default function ForecastPage() {
                     <Label>Estimasi Produksi Padi (Ton)</Label>
                     <Input 
                       type="number" 
+                      step="0.01"
                       min={0}
                       value={production} 
                       onChange={(e) => setProduction(Number(e.target.value))} 
