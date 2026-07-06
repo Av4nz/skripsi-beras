@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+.env
+.git
+data_train
+test_api.py
+seed_db.py
+README.md

@@ -1,6 +1,6 @@
 import { MetricCard } from "@/components/ui/MetricCard";
 import { ForecastChart } from "@/components/charts/ForecastChart";
-import { apiService } from "@/services/api";
+import { apiService, API_BASE_URL } from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Activity, Target, Coins, Zap, CloudRain, ShieldCheck } from "lucide-react";
 import { MetricsSchema, HargaBerasSchema, PredictionResponse } from "@/types/api";
@@ -40,7 +40,7 @@ export default async function Home() {
         </div>
         <h2 className="text-2xl font-semibold mb-2">Gagal Memuat Data Server</h2>
         <p className="text-muted-foreground max-w-md">
-          Terjadi kesalahan saat mengambil data dari backend. Pastikan server backend FastAPI berjalan di <code className="bg-muted px-1 py-0.5 rounded">http://localhost:8000</code>.
+          Terjadi kesalahan saat mengambil data dari backend. Pastikan server backend FastAPI berjalan dan dapat diakses di <code className="bg-muted px-1 py-0.5 rounded">{API_BASE_URL}</code>.
         </p>
       </div>
     );
