@@ -24,9 +24,6 @@ app = FastAPI(
 )
 
 # Configure CORS Middleware
-# Set CORS_ORIGINS as a comma-separated list of allowed frontend URLs, e.g.
-#   CORS_ORIGINS=http://localhost:3000,https://your-frontend.vercel.app
-# Defaults to localhost:3000 for local development.
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000")
 allowed_origins = [origin.strip() for origin in _cors_origins.split(",") if origin.strip()]
 

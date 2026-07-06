@@ -4,6 +4,13 @@ import { apiService, API_BASE_URL } from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Activity, Target, Coins, Zap, CloudRain, ShieldCheck } from "lucide-react";
 import { MetricsSchema, HargaBerasSchema, PredictionResponse } from "@/types/api";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Ringkasan harga beras terkini, akurasi model, dan tinjauan prediksi 6 bulan ke depan untuk DI Yogyakarta.",
+};
 
 export const dynamic = "force-dynamic";
 

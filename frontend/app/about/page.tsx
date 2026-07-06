@@ -3,6 +3,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowDown, Database, Cpu, BrainCircuit, Activity, Target } from "lucide-react";
 import { apiService } from "@/services/api";
 import { MetricsSchema } from "@/types/api";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Metodologi & Arsitektur",
+  description:
+    "Penjelasan metodologi Hybrid Forecasting (Prophet + XGBoost), sumber data, dan arsitektur sistem prediksi harga beras.",
+};
 
 export const dynamic = "force-dynamic";
 
