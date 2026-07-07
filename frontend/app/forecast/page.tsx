@@ -235,7 +235,7 @@ export default function ForecastPage() {
                           <TableRow key={p.date}>
                             <TableCell className="font-medium">{formattedDate}</TableCell>
                             <TableCell className="text-right">{formatCurrency(p.yhat)}</TableCell>
-                            <TableCell className={`text-right ${p.residual > 0 ? "text-destructive" : "text-primary"}`}>
+                            <TableCell className={`text-right ${p.residual > 0 ? "text-destructive dark:text-red-400" : "text-primary"}`}>
                               {p.residual > 0 ? "+" : ""}{formatCurrency(p.residual)}
                             </TableCell>
                             <TableCell className="text-right font-bold">{formatCurrency(p.final_prediction)}</TableCell>
