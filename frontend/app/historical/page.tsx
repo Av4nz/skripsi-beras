@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { HargaBerasSchema } from "@/types/api";
 import { apiService } from "@/services/api";
+import { formatMonthYear, toCsv, downloadTextFile } from "@/lib/utils";
 import { HistoricalChart } from "@/components/charts/HistoricalChart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, Activity } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, Activity, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -84,6 +85,26 @@ export default function HistoricalPage() {
     return new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(d);
   };
 
+  const handleDownloadCsv = () => {
+    if (filteredData.length === 0) {
+      toast.error("Tidak ada data untuk diunduh");
+      return;
+    }
+    const csv = toCsv(filteredData, [
+      { label: "Tanggal", value: (r) => r.date },
+      { label: "Bulan/Tahun", value: (r) => formatMonthYear(r.date) },
+      { label: "Harga Beras (Rp)", value: (r) => r.price },
+      { label: "Harga GKG (Rp)", value: (r) => r.harga_gkg ?? "" },
+      { label: "Curah Hujan (mm)", value: (r) => r.curah_hujan ?? "" },
+      { label: "Produksi Padi (Ton)", value: (r) => r.produksi_padi ?? "" },
+      { label: "Inflasi Pangan (%)", value: (r) => r.inflasi_pangan ?? "" },
+      { label: "Lebaran", value: (r) => r.lebaran },
+    ]);
+    const filename = `data-historis-beras_${filteredData[0].date}_${filteredData[filteredData.length - 1].date}.csv`;
+    downloadTextFile(filename, csv);
+    toast.success(`Berhasil mengunduh ${filteredData.length} baris data`);
+  };
+
   if (loading) {
     return (
       <div className="flex h-full min-h-[60vh] items-center justify-center">
@@ -116,14 +137,14 @@ export default function HistoricalPage() {
           <div className="space-y-2">
             <CardTitle>Tabel Dataset Utama</CardTitle>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground/80 pt-1">
-              <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5"/> Jumlah data: 59 data</span>
+              <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5"/> Jumlah data: {data.length} data</span>
               <span className="hidden sm:inline">•</span>
-              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Periode data: Januari 2021 – November 2025</span>
+              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Periode data: {data.length > 0 ? `${formatMonthYear(data[0].date)} – ${formatMonthYear(data[data.length - 1].date)}` : "-"}</span>
               <span className="hidden sm:inline">•</span>
               <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Frekuensi data: Bulanan</span>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -137,6 +158,15 @@ export default function HistoricalPage() {
                 }}
               />
             </div>
+            <Button
+              variant="outline"
+              onClick={handleDownloadCsv}
+              disabled={filteredData.length === 0}
+              className="shrink-0"
+            >
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Unduh CSV</span>
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

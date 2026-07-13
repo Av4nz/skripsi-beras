@@ -4,6 +4,7 @@ import { apiService, API_BASE_URL } from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Activity, Target, Coins, Zap, CloudRain, ShieldCheck } from "lucide-react";
 import { MetricsSchema, HargaBerasSchema, PredictionResponse } from "@/types/api";
+import { formatMonthYear } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default async function Home() {
     historical = await apiService.getHistoricalData();
     const latestHistorical = historical[historical.length - 1];
     predictionsResult = await apiService.predict({
-      period: 9,
+      period: 6,
       external_features: {
         harga_gkg: latestHistorical?.harga_gkg ?? 7800,
         curah_hujan: latestHistorical?.curah_hujan ?? 150,
@@ -60,6 +61,11 @@ export default async function Home() {
   // Calculate latest price and trend
   const latestData = historical[historical.length - 1];
   const previousData = historical[historical.length - 2];
+  const firstData = historical[0];
+
+  // Dynamic date range from the historical dataset
+  const rangeStart = firstData ? formatMonthYear(firstData.date) : "-";
+  const rangeEnd = latestData ? formatMonthYear(latestData.date) : "-";
   
   const latestPrice = latestData?.price || 0;
   const previousPrice = previousData?.price || 0;
@@ -135,9 +141,9 @@ export default async function Home() {
           Prediksi harga beras di DI Yogyakarta berbasis Hybrid Model Prophet dan XGBoost untuk mendukung ketahanan pangan daerah.
         </p>
         <div className="text-sm text-muted-foreground/80 mt-1 flex flex-col gap-0.5 sm:flex-row sm:gap-4 font-medium">
-          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Data historis: Januari 2021 – November 2025</span>
+          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Data historis: {rangeStart} – {rangeEnd}</span>
           <span className="hidden sm:inline">•</span>
-          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Terakhir diperbarui: November 2025</span>
+          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Terakhir diperbarui: {rangeEnd}</span>
         </div>
       </section>
 
@@ -178,7 +184,7 @@ export default async function Home() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="col-span-1 lg:col-span-2 flex flex-col">
           <CardHeader>
-            <CardTitle>Tinjauan Prediksi 6 Bulan Kedepan</CardTitle>
+            <CardTitle>Tinjauan Prediksi {predictionsResult.details?.steps?.length} Bulan Kedepan</CardTitle>
           </CardHeader>
           <CardContent className="flex-1 min-h-100">
             <ForecastChart 
