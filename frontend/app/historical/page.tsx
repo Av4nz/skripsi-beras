@@ -20,7 +20,16 @@ export default function HistoricalPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: keyof HargaBerasSchema; direction: "asc" | "desc" } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [rangeYears, setRangeYears] = useState<number | "all">("all");
   const itemsPerPage = 12;
+
+  const RANGE_OPTIONS = [
+    { label: "1 Thn", value: 1 },
+    { label: "2 Thn", value: 2 },
+    { label: "3 Thn", value: 3 },
+    { label: "5 Thn", value: 5 },
+    { label: "Semua", value: "all" },
+  ] as const;
 
   useEffect(() => {
     async function loadData() {
@@ -37,8 +46,17 @@ export default function HistoricalPage() {
     loadData();
   }, []);
 
+  const rangeFilteredData = React.useMemo(() => {
+    if (rangeYears === "all" || data.length === 0) return data;
+    const latest = new Date(data[data.length - 1].date);
+    const cutoff = new Date(
+      Date.UTC(latest.getUTCFullYear() - rangeYears, latest.getUTCMonth(), latest.getUTCDate())
+    );
+    return data.filter((item) => new Date(item.date) >= cutoff);
+  }, [data, rangeYears]);
+
   const filteredData = React.useMemo(() => {
-    let result = data;
+    let result = rangeFilteredData;
     if (searchTerm) {
       result = result.filter((item) => item.date.includes(searchTerm));
     }
@@ -52,7 +70,7 @@ export default function HistoricalPage() {
       });
     }
     return result;
-  }, [data, searchTerm, sortConfig]);
+  }, [rangeFilteredData, searchTerm, sortConfig]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -135,15 +153,41 @@ export default function HistoricalPage() {
 
       {/* Chart */}
       <Card className="mt-10">
-        <CardHeader>
-          <CardTitle>Tren Harga Beras &amp; Gabah</CardTitle>
-          <CardDescription>
-            Perbandingan harga Beras Medium II dengan harga Gabah Kering Giling (Rp/kg). Faktor lain
-            (curah hujan, produksi, inflasi) tersedia pada tabel di bawah.
-          </CardDescription>
+        <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+          <div>
+            <CardTitle>Tren Harga Beras &amp; Gabah</CardTitle>
+            <CardDescription className="mt-1">
+              Perbandingan harga Beras Medium II dengan harga Gabah Kering Giling (Rp/kg). Faktor lain
+              (curah hujan, produksi, inflasi) tersedia pada tabel di bawah.
+            </CardDescription>
+          </div>
+          <div
+            role="group"
+            aria-label="Pilih rentang waktu"
+            className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-border/70 bg-muted/30 p-1"
+          >
+            {RANGE_OPTIONS.map((opt) => {
+              const active = rangeYears === opt.value;
+              return (
+                <Button
+                  key={opt.label}
+                  variant={active ? "secondary" : "ghost"}
+                  size="sm"
+                  aria-pressed={active}
+                  onClick={() => {
+                    setRangeYears(opt.value);
+                    setCurrentPage(1);
+                  }}
+                  className={`h-8 rounded-full px-3 text-xs ${active ? "" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {opt.label}
+                </Button>
+              );
+            })}
+          </div>
         </CardHeader>
         <CardContent>
-          <HistoricalChart data={data} className="h-[320px] sm:h-[420px]" />
+          <HistoricalChart data={rangeFilteredData} className="h-[320px] sm:h-[420px]" />
         </CardContent>
       </Card>
 
