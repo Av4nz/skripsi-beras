@@ -1,19 +1,72 @@
+import Link from "next/link";
+import type { Metadata } from "next";
+import {
+  Activity,
+  ArrowRight,
+  CloudRain,
+  Coins,
+  Minus,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
+
 import { MetricCard } from "@/components/ui/MetricCard";
 import { ForecastChart } from "@/components/charts/ForecastChart";
-import { apiService, API_BASE_URL } from "@/services/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Activity, Target, Coins, Zap, CloudRain, ShieldCheck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { apiService, API_BASE_URL } from "@/services/api";
 import { MetricsSchema, HargaBerasSchema, PredictionResponse } from "@/types/api";
-import { formatMonthYear } from "@/lib/utils";
-import type { Metadata } from "next";
+import { formatMonthYear, cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Beranda",
   description:
     "Ringkasan harga beras terkini, akurasi model, dan tinjauan prediksi 6 bulan ke depan untuk DI Yogyakarta.",
 };
 
 export const dynamic = "force-dynamic";
+
+const formatRupiah = (v: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(v);
+
+function InsightCard({
+  icon,
+  iconClass,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  iconClass: string;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <Card className="h-full gap-3">
+      <CardHeader className="flex flex-row items-center gap-3">
+        <span
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-xl [&_svg]:size-5",
+            iconClass
+          )}
+        >
+          {icon}
+        </span>
+        <CardTitle className="text-base font-semibold">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm leading-relaxed text-muted-foreground">{desc}</p>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default async function Home() {
   let metricsData: MetricsSchema[] = [];
@@ -32,244 +85,304 @@ export default async function Home() {
         curah_hujan: latestHistorical?.curah_hujan ?? 150,
         produksi_padi: latestHistorical?.produksi_padi ?? 40000,
         inflasi_pangan: latestHistorical?.inflasi_pangan ?? 0.5,
-        lebaran: latestHistorical?.lebaran ?? 0
-      }
+        lebaran: latestHistorical?.lebaran ?? 0,
+      },
     });
   } catch (error) {
     console.error("Failed to fetch data from backend:", error);
     hasError = true;
   }
-  
+
   if (hasError) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center h-[60vh]">
-        <div className="rounded-full bg-destructive/10 p-4 mb-4">
+      <div className="mx-auto flex min-h-[60vh] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center">
+        <div className="mb-4 rounded-full bg-destructive/10 p-4">
           <Activity className="h-8 w-8 text-destructive" />
         </div>
-        <h2 className="text-2xl font-semibold mb-2">Gagal Memuat Data Server</h2>
-        <p className="text-muted-foreground max-w-md">
-          Terjadi kesalahan saat mengambil data dari backend. Pastikan server backend FastAPI berjalan dan dapat diakses di <code className="bg-muted px-1 py-0.5 rounded">{API_BASE_URL}</code>.
+        <h2 className="mb-2 text-2xl font-semibold">Gagal Memuat Data Server</h2>
+        <p className="max-w-md text-muted-foreground">
+          Terjadi kesalahan saat mengambil data dari backend. Pastikan server backend FastAPI
+          berjalan dan dapat diakses di{" "}
+          <code className="rounded bg-muted px-1 py-0.5">{API_BASE_URL}</code>.
         </p>
       </div>
     );
   }
-  
-  // Sort metrics by MAPE ascending to automatically display the best performing model (Tuned Hybrid)
+
   const sortedMetrics = [...metricsData].sort((a, b) => a.mape - b.mape);
   const metrics = sortedMetrics[0] || { mae: 0, mape: 0, rmse: 0 };
-  
-  // Calculate latest price and trend
+
   const latestData = historical[historical.length - 1];
   const previousData = historical[historical.length - 2];
   const firstData = historical[0];
 
-  // Dynamic date range from the historical dataset
   const rangeStart = firstData ? formatMonthYear(firstData.date) : "-";
   const rangeEnd = latestData ? formatMonthYear(latestData.date) : "-";
-  
+
   const latestPrice = latestData?.price || 0;
   const previousPrice = previousData?.price || 0;
-  
-  const priceDiff = latestPrice - previousPrice;
-  const priceTrend = priceDiff > 0 ? "up" : priceDiff < 0 ? "down" : "stable";
-  const trendValue = Math.abs(priceDiff);
 
-  // Dynamic Insights Logic
-  const priceInsightTitle = priceTrend === "up" ? "Tren Harga Naik" : priceTrend === "down" ? "Tren Harga Turun" : "Harga Stabil";
-  const priceInsightDesc = priceTrend === "up" 
-    ? `Tercatat kenaikan Rp ${trendValue} dari bulan sebelumnya. Faktor musiman atau eksternal mungkin sedang menekan pasokan.` 
-    : priceTrend === "down" 
-    ? `Harga dalam tren penurunan (turun Rp ${trendValue}). Pasokan kemungkinan melimpah di pasar.`
-    : `Harga beras stabil di Rp ${latestPrice} tanpa fluktuasi berarti dari bulan lalu.`;
-  const priceInsightColor = priceTrend === "up" ? "text-destructive" : priceTrend === "down" ? "text-primary" : "text-chart-4";
-  const PriceIcon = priceTrend === "down" ? TrendingDown : TrendingUp;
+  const priceDiff = latestPrice - previousPrice;
+  const priceTrend: "up" | "down" | "stable" =
+    priceDiff > 0 ? "up" : priceDiff < 0 ? "down" : "stable";
+  const trendValue = Math.abs(priceDiff);
+  const TrendIcon = priceTrend === "up" ? TrendingUp : priceTrend === "down" ? TrendingDown : Minus;
+  const trendVariant = priceTrend === "up" ? "destructive" : priceTrend === "down" ? "success" : "muted";
+
+  // Dynamic insights
+  const priceInsightTitle =
+    priceTrend === "up" ? "Tren Harga Naik" : priceTrend === "down" ? "Tren Harga Turun" : "Harga Stabil";
+  const priceInsightDesc =
+    priceTrend === "up"
+      ? `Tercatat kenaikan Rp ${trendValue} dari bulan sebelumnya. Faktor musiman atau eksternal mungkin sedang menekan pasokan.`
+      : priceTrend === "down"
+      ? `Harga dalam tren penurunan (turun Rp ${trendValue}). Pasokan kemungkinan melimpah di pasar.`
+      : `Harga beras relatif stabil tanpa fluktuasi berarti dari bulan lalu.`;
 
   const latestRainfall = latestData?.curah_hujan || 0;
   const previousRainfall = previousData?.curah_hujan || 0;
   const rainfallDiff = latestRainfall - previousRainfall;
-  
+
   let rainfallTitle = "Curah Hujan Stabil";
   let rainfallDesc = `Curah hujan tercatat ${latestRainfall} mm, stabil dan mendukung operasional pengeringan GKG.`;
-  let rainfallIconColor = "text-chart-2";
   if (rainfallDiff > 50) {
     rainfallTitle = "Curah Hujan Meningkat Tajam";
-    rainfallDesc = `Anomali kenaikan tajam (+${rainfallDiff.toFixed(0)} mm) menjadi ${latestRainfall} mm. Sangat berisiko menghambat penjemuran gabah.`;
-    rainfallIconColor = "text-destructive";
+    rainfallDesc = `Anomali kenaikan tajam (+${rainfallDiff.toFixed(0)} mm) menjadi ${latestRainfall} mm. Berisiko menghambat penjemuran gabah.`;
   } else if (rainfallDiff > 10) {
     rainfallTitle = "Curah Hujan Meningkat";
-    rainfallDesc = `Tercatat kenaikan curah hujan (+${rainfallDiff.toFixed(0)} mm). Perlu waspada terhadap kualitas GKG yang dihasilkan petani.`;
-    rainfallIconColor = "text-chart-3";
+    rainfallDesc = `Tercatat kenaikan curah hujan (+${rainfallDiff.toFixed(0)} mm). Perlu waspada terhadap kualitas GKG petani.`;
   } else if (rainfallDiff < -50) {
     rainfallTitle = "Curah Hujan Turun Tajam";
-    rainfallDesc = `Penurunan drastis (${rainfallDiff.toFixed(0)} mm). Menandakan musim kemarau yang dapat mengancam volume produksi panen.`;
-    rainfallIconColor = "text-chart-4";
+    rainfallDesc = `Penurunan drastis (${rainfallDiff.toFixed(0)} mm), menandakan musim kemarau yang dapat mengancam volume panen.`;
   } else if (rainfallDiff < -10) {
     rainfallTitle = "Curah Hujan Menurun";
-    rainfallDesc = `Curah hujan berkurang menjadi ${latestRainfall} mm. Kondisi ideal untuk proses pengeringan gabah hasil panen.`;
-    rainfallIconColor = "text-primary";
+    rainfallDesc = `Curah hujan berkurang menjadi ${latestRainfall} mm. Kondisi ideal untuk pengeringan gabah hasil panen.`;
   }
 
   const latestInflation = latestData?.inflasi_pangan || 0;
   const previousInflation = previousData?.inflasi_pangan || 0;
   const inflationDiff = latestInflation - previousInflation;
-  
+
   let inflationTitle = "Inflasi Pangan Stabil";
-  let inflationDesc = `Inflasi daerah terkendali di ${latestInflation.toFixed(2)}%, meredam volatilitas harga beras secara ekstrim.`;
-  let inflationIconColor = "text-primary";
+  let inflationDesc = `Inflasi daerah terkendali di ${latestInflation.toFixed(2)}%, meredam volatilitas harga beras.`;
   if (inflationDiff > 0.5) {
     inflationTitle = "Inflasi Pangan Melonjak";
-    inflationDesc = `Lonjakan inflasi tajam ke ${latestInflation.toFixed(2)}% terdeteksi. Risiko tinggi daya beli masyarakat menurun.`;
-    inflationIconColor = "text-destructive";
+    inflationDesc = `Lonjakan inflasi tajam ke ${latestInflation.toFixed(2)}%. Risiko tinggi daya beli masyarakat menurun.`;
   } else if (inflationDiff > 0.1) {
     inflationTitle = "Tren Inflasi Naik";
-    inflationDesc = `Inflasi perlahan naik ke level ${latestInflation.toFixed(2)}%. Memberikan sedikit tekanan pada harga bahan pokok.`;
-    inflationIconColor = "text-chart-3";
+    inflationDesc = `Inflasi perlahan naik ke level ${latestInflation.toFixed(2)}%. Memberi sedikit tekanan pada harga bahan pokok.`;
   } else if (inflationDiff < -0.1) {
     inflationTitle = "Tren Inflasi Menurun";
-    inflationDesc = `Penurunan inflasi ke ${latestInflation.toFixed(2)}% memberikan sinyal positif untuk stabilitas ekonomi daerah.`;
-    inflationIconColor = "text-chart-4";
+    inflationDesc = `Penurunan inflasi ke ${latestInflation.toFixed(2)}% memberi sinyal positif bagi stabilitas ekonomi daerah.`;
   }
 
+  const horizon = predictionsResult.details?.steps?.length ?? 6;
+
   return (
-    <div className="flex flex-col gap-8">
-      {/* Hero Section */}
-      <section className="flex flex-col gap-2 relative">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          Sistem Prediksi Harga Beras Medium II
-        </h1>
-        <p className="text-muted-foreground text-lg max-w-3xl">
-          Prediksi harga beras di DI Yogyakarta berbasis Hybrid Model Prophet dan XGBoost untuk mendukung ketahanan pangan daerah.
-        </p>
-        <div className="text-sm text-muted-foreground/80 mt-1 flex flex-col gap-0.5 sm:flex-row sm:gap-4 font-medium">
-          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Data historis: {rangeStart} – {rangeEnd}</span>
-          <span className="hidden sm:inline">•</span>
-          <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Terakhir diperbarui: {rangeEnd}</span>
-        </div>
-      </section>
-
-      {/* Metrics Cards */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          title="Harga Beras Terkini"
-          value={new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(latestPrice)}
-          description="per kg"
-          icon={<Coins className="h-4 w-4 text-primary" />}
-          trend={priceTrend}
-          trendValue={`Rp ${trendValue}`}
-        />
-        <MetricCard
-          title="MAPE (Model Accuracy)"
-          value={`${metrics.mape}%`}
-          description="Mean Absolute Percentage Error"
-          icon={<Target className="h-4 w-4 text-chart-4" />}
-          tooltip="Mean Absolute Percentage Error. Menunjukkan rata-rata persentase kesalahan prediksi. Semakin kecil nilainya maka model semakin akurat."
-        />
-        <MetricCard
-          title="MAE (Error Absolut)"
-          value={`Rp ${metrics.mae}`}
-          description="Mean Absolute Error"
-          icon={<Activity className="h-4 w-4 text-chart-3" />}
-          tooltip="Mean Absolute Error. Menunjukkan rata-rata selisih absolut antara hasil prediksi dan harga aktual."
-        />
-        <MetricCard
-          title="RMSE (Root Mean Square)"
-          value={`Rp ${metrics.rmse}`}
-          description="Root Mean Square Error"
-          icon={<TrendingUp className="h-4 w-4 text-chart-2" />}
-          tooltip="Root Mean Square Error. Mengukur besarnya kesalahan prediksi dengan penalti lebih besar untuk error yang tinggi."
-        />
-      </section>
-
-      {/* Main Chart Area */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="col-span-1 lg:col-span-2 flex flex-col">
-          <CardHeader>
-            <CardTitle>Tinjauan Prediksi {predictionsResult.details?.steps?.length} Bulan Kedepan</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 min-h-100">
-            <ForecastChart 
-              historicalData={historical.slice(-12)} 
-              predictions={predictionsResult.details?.steps || []}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Quick Insights */}
-        <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-md flex items-center gap-2">
-                <PriceIcon className={`h-4 w-4 ${priceInsightColor}`} />
-                {priceInsightTitle}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {priceInsightDesc}
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-md flex items-center gap-2">
-                <CloudRain className={`h-4 w-4 ${rainfallIconColor}`} />
-                {rainfallTitle}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {rainfallDesc}
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-md flex items-center gap-2">
-                <ShieldCheck className={`h-4 w-4 ${inflationIconColor}`} />
-                {inflationTitle}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {inflationDesc}
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-3 italic border-t pt-2">Insight otomatis berdasarkan analisis data periode terbaru.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* System Overview */}
-      <section>
-        <Card className="bg-secondary/10 border-secondary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-accent" />
-              Metodologi Hybrid Forecasting
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-muted-foreground">
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">1. Facebook Prophet</h3>
-                <p>
-                  Prophet digunakan sebagai model dasar (base model) untuk menangkap pola tren linear/non-linear serta efek musiman (seasonality) tahunan dari harga beras.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">2. Extreme Gradient Boosting (XGBoost)</h3>
-                <p>
-                  XGBoost diterapkan untuk memprediksi nilai error (residual) dari Prophet menggunakan faktor eksternal seperti curah hujan, produksi, inflasi, dan harga GKG.
-                </p>
-              </div>
+    <div className="flex flex-col">
+      {/* Hero */}
+      <section className="bg-hero-gradient border-b border-border/60">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:items-center lg:px-8">
+          <div>
+            <Badge variant="secondary" className="mb-5">
+              <Sparkles /> Prediksi Harga Pangan · DIY
+            </Badge>
+            <h1 className="font-heading text-4xl font-semibold leading-[1.06] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+              Pantau &amp; prediksi <span className="text-primary">harga beras</span> di Yogyakarta
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Informasi harga Beras Medium II yang akurat dan transparan, ditenagai{" "}
+              <span className="font-medium text-foreground">Hybrid Model</span> Prophet + XGBoost —
+              untuk membantu keputusan masyarakat, pedagang, dan pemerintah daerah.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="/forecast"
+                className={cn(buttonVariants({ size: "lg" }), "rounded-full px-6")}
+              >
+                Lihat Prediksi <ArrowRight />
+              </Link>
+              <Link
+                href="/historical"
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "rounded-full px-6")}
+              >
+                Data Historis
+              </Link>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Hero price stat */}
+          <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-xl shadow-primary/5 backdrop-blur-sm sm:p-8">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <Coins className="size-4 text-primary" /> Harga Beras Medium II · DIY
+            </div>
+            <div className="mt-4 flex items-end gap-2">
+              <span className="font-sans text-5xl font-bold tracking-tight tabular-nums text-foreground sm:text-6xl">
+                {formatRupiah(latestPrice)}
+              </span>
+              <span className="pb-2 text-base font-medium text-muted-foreground">/kg</span>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-2.5">
+              <Badge variant={trendVariant}>
+                <TrendIcon /> Rp {trendValue}
+              </Badge>
+              <span className="text-sm text-muted-foreground">dibanding bulan lalu</span>
+            </div>
+            <div className="mt-6 flex items-center gap-2 border-t border-border/60 pt-4 text-sm text-muted-foreground">
+              <Activity className="size-4 text-secondary" /> Data terbaru:{" "}
+              <span className="font-medium text-foreground">{rangeEnd}</span>
+            </div>
+          </div>
+        </div>
       </section>
+
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Forecast overview */}
+        <section className="py-14 sm:py-16">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+                Tinjauan prediksi {horizon} bulan ke depan
+              </h2>
+              <p className="mt-1.5 text-muted-foreground">
+                Perbandingan harga aktual dengan proyeksi model hybrid.
+              </p>
+            </div>
+            <Link
+              href="/forecast"
+              className={cn(buttonVariants({ variant: "outline" }), "rounded-full")}
+            >
+              Simulasi sendiri <ArrowRight />
+            </Link>
+          </div>
+          <Card>
+            <CardContent>
+              <ForecastChart
+                historicalData={historical.slice(-12)}
+                predictions={predictionsResult.details?.steps || []}
+                className="h-[320px] sm:h-[420px]"
+              />
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* Insights */}
+        <section className="pb-14 sm:pb-16">
+          <div className="mb-6 flex items-center gap-3">
+            <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+              Sorotan pasar
+            </h2>
+            <Badge variant="muted">Otomatis</Badge>
+          </div>
+          <div className="grid gap-5 md:grid-cols-3">
+            <InsightCard
+              icon={<TrendIcon />}
+              iconClass={
+                priceTrend === "up"
+                  ? "bg-destructive/10 text-destructive"
+                  : priceTrend === "down"
+                  ? "bg-primary/10 text-primary"
+                  : "bg-muted text-muted-foreground"
+              }
+              title={priceInsightTitle}
+              desc={priceInsightDesc}
+            />
+            <InsightCard
+              icon={<CloudRain />}
+              iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
+              title={rainfallTitle}
+              desc={rainfallDesc}
+            />
+            <InsightCard
+              icon={<ShieldCheck />}
+              iconClass="bg-accent/20 text-accent-foreground dark:text-accent"
+              title={inflationTitle}
+              desc={inflationDesc}
+            />
+          </div>
+        </section>
+
+        {/* Model accuracy */}
+        <section className="pb-14 sm:pb-16">
+          <div className="mb-6">
+            <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+              Seberapa akurat prediksinya?
+            </h2>
+            <p className="mt-1.5 max-w-2xl text-muted-foreground">
+              Model dievaluasi pada data uji menggunakan tiga metrik standar. Semakin kecil
+              nilainya, semakin dekat prediksi dengan harga sebenarnya.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-3">
+            <MetricCard
+              title="MAPE"
+              value={`${metrics.mape}%`}
+              description="Rata-rata galat persentase"
+              icon={<Target />}
+              iconClassName="bg-primary/10 text-primary"
+              tooltip="Mean Absolute Percentage Error — rata-rata persentase kesalahan prediksi. Semakin kecil semakin akurat."
+            />
+            <MetricCard
+              title="MAE"
+              value={`Rp ${metrics.mae}`}
+              description="Rata-rata selisih absolut"
+              icon={<Activity />}
+              iconClassName="bg-secondary/15 text-secondary dark:text-secondary-foreground"
+              tooltip="Mean Absolute Error — rata-rata selisih absolut antara hasil prediksi dan harga aktual."
+            />
+            <MetricCard
+              title="RMSE"
+              value={`Rp ${metrics.rmse}`}
+              description="Akar rata-rata galat kuadrat"
+              icon={<TrendingUp />}
+              iconClassName="bg-accent/20 text-accent-foreground dark:text-accent"
+              tooltip="Root Mean Square Error — memberi penalti lebih besar pada kesalahan yang tinggi."
+            />
+          </div>
+        </section>
+
+        {/* Methodology teaser */}
+        <section className="pb-16">
+          <Card className="overflow-hidden bg-section-muted ring-secondary/20">
+            <CardContent className="grid gap-8 py-2 md:grid-cols-2 md:items-center">
+              <div>
+                <Badge variant="accent" className="mb-4">
+                  Metodologi
+                </Badge>
+                <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
+                  Dua model, satu prediksi yang lebih tajam
+                </h2>
+                <p className="mt-3 text-muted-foreground">
+                  <span className="font-medium text-foreground">Prophet</span> menangkap tren &amp;
+                  pola musiman, lalu <span className="font-medium text-foreground">XGBoost</span>{" "}
+                  mengoreksi sisa kesalahannya menggunakan faktor eksternal (curah hujan, produksi,
+                  inflasi, harga gabah, Lebaran).
+                </p>
+                <Link
+                  href="/about"
+                  className={cn(buttonVariants({ size: "lg" }), "mt-6 rounded-full px-6")}
+                >
+                  Pelajari metodologi <ArrowRight />
+                </Link>
+              </div>
+              <div className="grid gap-4">
+                <div className="rounded-2xl border border-border/60 bg-card p-5">
+                  <h3 className="font-semibold text-foreground">1 · Facebook Prophet</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    Model dasar untuk menangkap tren jangka panjang dan musiman tahunan harga beras.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-border/60 bg-card p-5">
+                  <h3 className="font-semibold text-foreground">2 · XGBoost (residual)</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                    Mempelajari pola galat Prophet dari variabel eksternal untuk menajamkan prediksi.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowDown, Database, Cpu, BrainCircuit, Activity, Target } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowDown,
+  Database,
+  Cpu,
+  BrainCircuit,
+  Activity,
+  Target,
+  Sigma,
+  CloudRain,
+  Wheat,
+  TrendingUp,
+  BadgeInfo,
+} from "lucide-react";
 import { apiService } from "@/services/api";
 import { MetricsSchema } from "@/types/api";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,6 +27,81 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
+const rupiah = (v: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v);
+
+function FlowStep({
+  icon,
+  iconClass,
+  title,
+  desc,
+  highlight,
+}: {
+  icon: React.ReactNode;
+  iconClass?: string;
+  title: string;
+  desc: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex w-full max-w-md items-center gap-4 rounded-2xl border p-4 transition-colors",
+        highlight
+          ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+          : "border-border/60 bg-card hover:border-primary/40"
+      )}
+    >
+      <span
+        className={cn(
+          "flex size-11 shrink-0 items-center justify-center rounded-xl [&_svg]:size-5",
+          highlight ? "bg-white/15 text-primary-foreground" : iconClass
+        )}
+      >
+        {icon}
+      </span>
+      <div>
+        <p className={cn("font-semibold", highlight ? "text-primary-foreground" : "text-foreground")}>{title}</p>
+        <p className={cn("text-sm", highlight ? "text-primary-foreground/85" : "text-muted-foreground")}>{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+const dataSources = [
+  {
+    icon: <Wheat />,
+    name: "PIHPS Nasional",
+    items: ["Harga Beras Medium II — DI Yogyakarta (variabel target)"],
+    iconClass: "bg-primary/10 text-primary",
+  },
+  {
+    icon: <Database />,
+    name: "Badan Pusat Statistik (BPS)",
+    items: ["Harga Gabah Kering Giling (GKG)", "Produksi padi", "Inflasi pangan"],
+    iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
+  },
+  {
+    icon: <CloudRain />,
+    name: "NASA POWER",
+    items: ["Curah hujan historis (berbasis satelit)"],
+    iconClass: "bg-accent/20 text-accent-foreground dark:text-accent",
+  },
+];
+
+const techStack = [
+  "Next.js 16",
+  "React 19",
+  "Tailwind CSS v4",
+  "Recharts",
+  "FastAPI (Python)",
+  "Facebook Prophet",
+  "XGBoost",
+  "Pandas / Scikit-Learn",
+  "PostgreSQL",
+  "TypeScript",
+];
+
 export default async function AboutPage() {
   let metricsData: MetricsSchema[] = [];
   try {
@@ -21,139 +110,112 @@ export default async function AboutPage() {
     console.error("Failed to fetch metrics", error);
   }
 
+  const bestMape = metricsData.length ? Math.min(...metricsData.map((m) => m.mape)) : null;
+
   return (
-    <div className="flex flex-col gap-8 max-w-5xl mx-auto w-full">
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl font-bold tracking-tight">Metodologi & Arsitektur Sistem</h1>
-        <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-          Penjelasan rinci mengenai model Hybrid Prophet-XGBoost dan alur pemrosesan data untuk memprediksi harga beras Medium II.
+    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      {/* Header */}
+      <header className="text-center">
+        <Badge variant="secondary" className="mb-4">
+          <BadgeInfo /> Metodologi
+        </Badge>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+          Bagaimana prediksi ini dibuat
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
+          Sistem menggabungkan <span className="font-medium text-foreground">Prophet</span> dan{" "}
+          <span className="font-medium text-foreground">XGBoost</span> dalam satu model hybrid untuk
+          memprediksi harga Beras Medium II secara akurat dan transparan.
         </p>
-      </div>
+      </header>
 
-      {/* Workflow Diagram */}
-      <Card className="border-primary/20 shadow-lg">
-        <CardHeader className="text-center pb-2">
-          <CardTitle>Alur Prediksi Model Hybrid (Workflow)</CardTitle>
-          <CardDescription>Diagram alir arsitektur sistem peramalan</CardDescription>
+      {/* Workflow */}
+      <Card className="mt-12">
+        <CardHeader className="text-center">
+          <CardTitle>Alur Model Hybrid</CardTitle>
+          <CardDescription>Dari data historis hingga prediksi akhir</CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="flex flex-col items-center gap-4 py-4 w-full">
-            
-            {/* Step 1 */}
-            <div className="flex flex-col items-center justify-center p-4 w-64 rounded-xl bg-card border shadow-sm relative group transition-all hover:border-primary">
-              <Database className="h-8 w-8 text-chart-2 mb-2" />
-              <span className="font-semibold text-center">Historical Data</span>
-              <span className="text-xs text-muted-foreground text-center">Time series Harga Beras</span>
-            </div>
-
-            <ArrowDown className="text-muted-foreground h-6 w-6" />
-
-            {/* Step 2 */}
-            <div className="flex flex-col items-center justify-center p-4 w-64 rounded-xl bg-card border shadow-sm relative group transition-all hover:border-primary">
-              <Activity className="h-8 w-8 text-primary mb-2" />
-              <span className="font-semibold text-center">Prophet Forecast</span>
-              <span className="text-xs text-muted-foreground text-center">Trend linear & Seasonality</span>
-            </div>
-
-            <ArrowDown className="text-muted-foreground h-6 w-6" />
-
-            {/* Step 3 */}
-            <div className="flex flex-col items-center justify-center p-4 w-64 rounded-xl bg-secondary/20 border border-secondary shadow-sm">
-              <BrainCircuit className="h-8 w-8 text-primary mb-2" />
-              <span className="font-semibold text-center text-foreground">Residual Calculation</span>
-              <span className="text-xs text-muted-foreground text-center">Error = Aktual - Prediksi Prophet</span>
-            </div>
-
-            <ArrowDown className="text-muted-foreground h-6 w-6" />
-
-            {/* Step 4 */}
-            <div className="flex flex-col items-center justify-center p-4 w-72 rounded-xl bg-card border shadow-sm relative group transition-all hover:border-primary">
-              <Cpu className="h-8 w-8 text-chart-4 mb-2" />
-              <span className="font-semibold text-center">XGBoost Residual Prediction</span>
-              <span className="text-xs text-muted-foreground text-center">Faktor Eksternal: Hujan, Inflasi, Produksi, GKG</span>
-            </div>
-
-            <ArrowDown className="text-muted-foreground h-6 w-6" />
-
-            {/* Step 5 */}
-            <div className="flex flex-col items-center justify-center p-5 w-80 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 border-primary">
-              <span className="font-bold text-lg text-center tracking-tight">Final Hybrid Forecast</span>
-              <span className="text-sm opacity-90 text-center mt-1">Prediksi Prophet + Prediksi Residual XGBoost</span>
-            </div>
-
+        <CardContent>
+          <div className="flex flex-col items-center gap-3 py-2">
+            <FlowStep
+              icon={<Database />}
+              iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
+              title="Data Historis"
+              desc="Deret waktu bulanan harga beras + faktor eksternal"
+            />
+            <ArrowDown className="size-5 text-muted-foreground" />
+            <FlowStep
+              icon={<Activity />}
+              iconClass="bg-primary/10 text-primary"
+              title="Prediksi Prophet"
+              desc="Menangkap tren & pola musiman"
+            />
+            <ArrowDown className="size-5 text-muted-foreground" />
+            <FlowStep
+              icon={<Sigma />}
+              iconClass="bg-accent/20 text-accent-foreground dark:text-accent"
+              title="Hitung Residual"
+              desc="Residual = harga aktual − prediksi Prophet"
+            />
+            <ArrowDown className="size-5 text-muted-foreground" />
+            <FlowStep
+              icon={<Cpu />}
+              iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
+              title="XGBoost Prediksi Residual"
+              desc="Belajar dari curah hujan, inflasi, produksi, GKG, Lebaran"
+            />
+            <ArrowDown className="size-5 text-muted-foreground" />
+            <FlowStep
+              icon={<BrainCircuit />}
+              title="Prediksi Hybrid Final"
+              desc="Prediksi Prophet + koreksi residual XGBoost"
+              highlight
+            />
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Sumber Data */}
+      {/* Data sources */}
+      <section className="mt-6">
+        <div className="grid gap-5 md:grid-cols-3">
+          {dataSources.map((s) => (
+            <Card key={s.name} className="h-full gap-3">
+              <CardHeader className="flex flex-row items-center gap-3">
+                <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl [&_svg]:size-5", s.iconClass)}>
+                  {s.icon}
+                </span>
+                <CardTitle className="text-base">{s.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-1.5 text-sm text-muted-foreground">
+                  {s.items.map((it) => (
+                    <li key={it} className="flex gap-2">
+                      <span className="mt-2 size-1 shrink-0 rounded-full bg-primary" />
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Explanations */}
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Sumber Data</CardTitle>
+            <CardTitle>Mengapa Hybrid?</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <div>
-              <p className="font-semibold text-foreground">PIHPS Nasional:</p>
-              <ul className="list-disc pl-5"><li>Digunakan untuk data harga Beras Medium II DI Yogyakarta.</li></ul>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">Badan Pusat Statistik (BPS):</p>
-              <ul className="list-disc pl-5">
-                <li>Digunakan untuk data harga Gabah Kering Giling (GKG).</li>
-                <li>Digunakan untuk data produksi padi.</li>
-                <li>Digunakan untuk data inflasi pangan.</li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">NASA POWER:</p>
-              <ul className="list-disc pl-5"><li>Digunakan untuk data curah hujan historis.</li></ul>
-            </div>
-            <p className="mt-4 italic pt-2 border-t">Seluruh data telah melalui proses integrasi dan transformasi sebelum digunakan pada model prediksi.</p>
-          </CardContent>
-        </Card>
-
-        {/* Variabel Prediksi */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Variabel Prediksi</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Harga Gabah Kering Giling (GKG)</li>
-              <li>Curah Hujan</li>
-              <li>Produksi Padi</li>
-              <li>Inflasi Pangan</li>
-              <li>Faktor Musiman Lebaran</li>
-            </ul>
-            <p className="mt-4 italic pt-2 border-t">Variabel tersebut digunakan sebagai faktor eksternal dalam proses prediksi residual menggunakan model XGBoost untuk meningkatkan hasil prediksi Prophet.</p>
-          </CardContent>
-        </Card>
-
-        {/* Keterbatasan Sistem */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Keterbatasan Sistem</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Prediksi merupakan estimasi berdasarkan data historis dan variabel eksternal yang tersedia.</li>
-              <li>Perubahan kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat mempengaruhi harga aktual.</li>
-              <li>Faktor eksternal yang tidak tersedia dalam dataset tidak dapat dimodelkan oleh sistem.</li>
-              <li>Hasil prediksi tidak menjamin harga aktual pada masa mendatang.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tentang Hybrid Model</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
+          <CardContent className="space-y-3 text-muted-foreground">
             <p>
-              Pendekatan model tunggal seringkali kurang optimal dalam menangkap semua pola pada data time series ekonomi. Harga beras memiliki pola trend dan musiman (seasonality) yang kuat, tetapi juga rentan terhadap volatilitas jangka pendek akibat faktor cuaca atau kebijakan.
+              Model tunggal sering kurang optimal menangkap semua pola pada data ekonomi. Harga beras
+              punya tren &amp; musiman yang kuat, tetapi juga volatil akibat cuaca dan kebijakan.
             </p>
             <p>
-              Dengan arsitektur hybrid, kita menggabungkan kekuatan <strong>Facebook Prophet</strong> yang sangat baik dalam menangani pola musiman yang jelas, dengan <strong>XGBoost</strong>, algoritma machine learning berbasis tree yang handal dalam menemukan pola non-linear dari interaksi fitur-fitur eksternal (curah hujan, inflasi, dll) terhadap residual (error) dari Prophet.
+              Arsitektur hybrid menggabungkan <span className="font-medium text-foreground">Prophet</span>{" "}
+              (unggul pada pola musiman) dengan <span className="font-medium text-foreground">XGBoost</span>{" "}
+              (unggul menemukan pola non-linear faktor eksternal terhadap residual Prophet).
             </p>
           </CardContent>
         </Card>
@@ -162,52 +224,79 @@ export default async function AboutPage() {
           <CardHeader>
             <CardTitle>Recursive Forecasting</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
+          <CardContent className="space-y-3 text-muted-foreground">
             <p>
-              Dalam sistem ini, prediksi dilakukan menggunakan teknik <strong>Recursive Multi-step Forecasting</strong>. Untuk memprediksi harga beras hingga 12 bulan ke depan, model memprediksi harga di bulan pertama. Harga prediksi tersebut kemudian digunakan sebagai input (lag) untuk memprediksi harga di bulan kedua, dan seterusnya.
+              Prediksi multi-periode memakai <span className="font-medium text-foreground">recursive
+              multi-step forecasting</span>: hasil bulan pertama menjadi input (lag) untuk bulan
+              berikutnya, dan seterusnya.
             </p>
             <p>
-              Teknik ini memungkinkan kita untuk melihat tren harga jangka menengah tanpa harus melatih model terpisah untuk setiap periode kedepan, meskipun akumulasi error harus diawasi dengan cermat.
+              Teknik ini menampilkan tren jangka menengah dengan satu model, meski akumulasi galat perlu
+              diawasi dengan cermat.
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Variabel */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Variabel Prediksi (Faktor Eksternal)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {["Harga GKG", "Curah Hujan", "Produksi Padi", "Inflasi Pangan", "Faktor Lebaran"].map((v) => (
+                <Badge key={v} variant="muted">
+                  {v}
+                </Badge>
+              ))}
+            </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Variabel ini dipakai XGBoost untuk memprediksi residual dan menajamkan hasil Prophet.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Keterbatasan */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Keterbatasan Sistem</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              {[
+                "Prediksi adalah estimasi berbasis data historis & variabel yang tersedia.",
+                "Kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat memengaruhi harga aktual.",
+                "Faktor di luar dataset tidak dapat dimodelkan sistem.",
+                "Hasil prediksi tidak menjamin harga aktual di masa mendatang.",
+              ].map((it) => (
+                <li key={it} className="flex gap-2">
+                  <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground/60" />
+                  {it}
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Technology Stack</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">Next.js App Router</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">Tailwind CSS v4</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">Recharts</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">FastAPI (Python)</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">Facebook Prophet</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">XGBoost</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">Pandas / Scikit-Learn</div>
-            <div className="p-4 rounded-lg bg-card border text-center font-medium">TypeScript</div>
-          </div>
-        </CardContent>
-      </Card>
-
+      {/* Metrics comparison */}
       {metricsData.length > 0 && (
-        <Card className="border-primary/20 shadow-md">
+        <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
-              Perbandingan Performa Model (Metrik Evaluasi)
+              <Target className="size-5 text-primary" />
+              Perbandingan Performa Model
             </CardTitle>
             <CardDescription>
-              Tabel ini membandingkan tingkat error antara model dasar (Prophet) dan model hybrid. Model dengan MAPE terendah digunakan sebagai model final dalam sistem.
+              Error antar-model pada data uji. Model dengan MAPE terendah dipakai sebagai model final.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-border/70">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-75">Nama Model</TableHead>
+                  <TableRow className="bg-muted/40">
+                    <TableHead>Model</TableHead>
                     <TableHead className="text-right">MAPE (%)</TableHead>
                     <TableHead className="text-right">MAE (Rp)</TableHead>
                     <TableHead className="text-right">RMSE (Rp)</TableHead>
@@ -215,22 +304,23 @@ export default async function AboutPage() {
                 </TableHeader>
                 <TableBody>
                   {metricsData.map((m) => {
-                    const formattedModelName = m.model
-                      .split('_')
-                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                      .join(' ');
-                      
+                    const name = m.model
+                      .split("_")
+                      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                      .join(" ");
+                    const isBest = bestMape !== null && m.mape === bestMape;
                     return (
-                    <TableRow key={m.model}>
-                      <TableCell className="font-medium">{formattedModelName}</TableCell>
-                      <TableCell className="text-right">{m.mape.toFixed(2)}%</TableCell>
-                      <TableCell className="text-right">
-                        {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(m.mae)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(m.rmse)}
-                      </TableCell>
-                    </TableRow>
+                      <TableRow key={m.model} className={isBest ? "bg-primary/5" : undefined}>
+                        <TableCell className="font-medium">
+                          <span className="flex items-center gap-2">
+                            {name}
+                            {isBest && <Badge variant="success">Final</Badge>}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{m.mape.toFixed(2)}%</TableCell>
+                        <TableCell className="text-right tabular-nums">{rupiah(m.mae)}</TableCell>
+                        <TableCell className="text-right tabular-nums">{rupiah(m.rmse)}</TableCell>
+                      </TableRow>
                     );
                   })}
                 </TableBody>
@@ -239,6 +329,23 @@ export default async function AboutPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Tech stack */}
+      <section className="mt-12 text-center">
+        <h2 className="flex items-center justify-center gap-2 font-heading text-xl font-semibold tracking-tight">
+          <TrendingUp className="size-5 text-primary" /> Teknologi yang Digunakan
+        </h2>
+        <div className="mt-5 flex flex-wrap justify-center gap-2.5">
+          {techStack.map((t) => (
+            <span
+              key={t}
+              className="rounded-full border border-border/70 bg-card px-4 py-1.5 text-sm font-medium text-foreground shadow-sm"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

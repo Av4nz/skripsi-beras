@@ -7,16 +7,16 @@ import { formatMonthYear, toCsv, downloadTextFile } from "@/lib/utils";
 import { HistoricalChart } from "@/components/charts/HistoricalChart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, Activity, Download } from "lucide-react";
+import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, CalendarRange, Clock, Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export default function HistoricalPage() {
   const [data, setData] = useState<HargaBerasSchema[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Filter/Sort/Pagination states
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: keyof HargaBerasSchema; direction: "asc" | "desc" } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,29 +39,18 @@ export default function HistoricalPage() {
 
   const filteredData = React.useMemo(() => {
     let result = data;
-    
-    // Apply search filter (by year/date)
     if (searchTerm) {
-      result = result.filter(item => 
-        item.date.includes(searchTerm)
-      );
+      result = result.filter((item) => item.date.includes(searchTerm));
     }
-    
-    // Apply sorting
     if (sortConfig !== null) {
       result = [...result].sort((a, b) => {
-        const valA = a[sortConfig.key] ?? (typeof a[sortConfig.key] === 'string' ? "" : 0);
-        const valB = b[sortConfig.key] ?? (typeof b[sortConfig.key] === 'string' ? "" : 0);
-        if (valA < valB) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (valA > valB) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
+        const valA = a[sortConfig.key] ?? (typeof a[sortConfig.key] === "string" ? "" : 0);
+        const valB = b[sortConfig.key] ?? (typeof b[sortConfig.key] === "string" ? "" : 0);
+        if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+        if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
         return 0;
       });
     }
-    
     return result;
   }, [data, searchTerm, sortConfig]);
 
@@ -77,13 +66,11 @@ export default function HistoricalPage() {
     setCurrentPage(1);
   };
 
-  const formatCurrency = (val: number) => 
+  const formatCurrency = (val: number) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val);
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(d);
-  };
+  const formatDate = (dateStr: string) =>
+    new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(new Date(dateStr));
 
   const handleDownloadCsv = () => {
     if (filteredData.length === 0) {
@@ -105,52 +92,75 @@ export default function HistoricalPage() {
     toast.success(`Berhasil mengunduh ${filteredData.length} baris data`);
   };
 
+  const SortHead = ({ label, k, align = "right" }: { label: string; k: keyof HargaBerasSchema; align?: "left" | "right" }) => (
+    <TableHead className={align === "right" ? "text-right" : ""}>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => requestSort(k)}
+        className={`h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground ${align === "right" ? "-mr-2 ml-auto" : "-ml-2"}`}
+      >
+        {label} <ArrowUpDown className="size-3.5 opacity-60" />
+      </Button>
+    </TableHead>
+  );
+
   if (loading) {
     return (
-      <div className="flex h-full min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dataset Historis</h1>
-        <p className="text-muted-foreground mt-2">
-          Eksplorasi data historis harga beras dan faktor eksternal yang digunakan untuk melatih model prediksi.
-        </p>
-      </div>
+  const period =
+    data.length > 0 ? `${formatMonthYear(data[0].date)} – ${formatMonthYear(data[data.length - 1].date)}` : "-";
 
-      <Card>
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <header>
+        <Badge variant="secondary" className="mb-4">
+          <Database /> Dataset Penelitian
+        </Badge>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Data Historis</h1>
+        <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
+          Jelajahi data historis harga beras dan faktor eksternal yang menjadi dasar pelatihan model prediksi.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Badge variant="muted"><Database /> {data.length} baris</Badge>
+          <Badge variant="muted"><CalendarRange /> {period}</Badge>
+          <Badge variant="muted"><Clock /> Bulanan</Badge>
+        </div>
+      </header>
+
+      {/* Chart */}
+      <Card className="mt-10">
         <CardHeader>
-          <CardTitle>Visualisasi Tren Faktor Eksternal</CardTitle>
-          <CardDescription>Perbandingan Harga Beras, Harga GKG, dan Inflasi</CardDescription>
+          <CardTitle>Tren Harga Beras &amp; Gabah</CardTitle>
+          <CardDescription>
+            Perbandingan harga Beras Medium II dengan harga Gabah Kering Giling (Rp/kg). Faktor lain
+            (curah hujan, produksi, inflasi) tersedia pada tabel di bawah.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <HistoricalChart data={data} height={400} />
+          <HistoricalChart data={data} className="h-[320px] sm:h-[420px]" />
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="flex flex-col md:flex-row md:items-start justify-between pb-4 gap-4 space-y-0">
-          <div className="space-y-2">
-            <CardTitle>Tabel Dataset Utama</CardTitle>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground/80 pt-1">
-              <span className="flex items-center gap-1.5"><Database className="h-3.5 w-3.5"/> Jumlah data: {data.length} data</span>
-              <span className="hidden sm:inline">•</span>
-              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Periode data: {data.length > 0 ? `${formatMonthYear(data[0].date)} – ${formatMonthYear(data[data.length - 1].date)}` : "-"}</span>
-              <span className="hidden sm:inline">•</span>
-              <span className="flex items-center gap-1.5"><Activity className="h-3.5 w-3.5"/> Frekuensi data: Bulanan</span>
-            </div>
+      {/* Table */}
+      <Card className="mt-6">
+        <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <CardTitle>Tabel Dataset</CardTitle>
+            <CardDescription className="mt-1">Cari, urutkan, dan unduh data lengkap.</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Cari tahun (ex: 2023)..."
-                className="w-64 pl-8"
+                placeholder="Cari tahun (mis. 2023)…"
+                className="h-10 w-full pl-9 sm:w-56"
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -160,50 +170,27 @@ export default function HistoricalPage() {
             </div>
             <Button
               variant="outline"
+              size="lg"
               onClick={handleDownloadCsv}
               disabled={filteredData.length === 0}
-              className="shrink-0"
+              className="shrink-0 rounded-full"
             >
-              <Download className="h-4 w-4 sm:mr-2" />
+              <Download className="size-4 sm:mr-1" />
               <span className="hidden sm:inline">Unduh CSV</span>
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-border/70">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <Button variant="ghost" onClick={() => requestSort("date")} className="hover:bg-transparent -ml-4 px-4">
-                      Bulan/Tahun <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => requestSort("price")} className="hover:bg-transparent justify-end w-full pr-0">
-                      Harga Beras <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => requestSort("harga_gkg")} className="hover:bg-transparent justify-end w-full pr-0">
-                      Harga GKG <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => requestSort("curah_hujan")} className="hover:bg-transparent justify-end w-full pr-0">
-                      Curah Hujan (mm) <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => requestSort("produksi_padi")} className="hover:bg-transparent justify-end w-full pr-0">
-                      Produksi Padi (Ton) <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" onClick={() => requestSort("inflasi_pangan")} className="hover:bg-transparent justify-end w-full pr-0">
-                      Inflasi (%) <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </TableHead>
+                <TableRow className="bg-muted/40">
+                  <SortHead label="Bulan/Tahun" k="date" align="left" />
+                  <SortHead label="Harga Beras" k="price" />
+                  <SortHead label="Harga GKG" k="harga_gkg" />
+                  <SortHead label="Curah Hujan (mm)" k="curah_hujan" />
+                  <SortHead label="Produksi (Ton)" k="produksi_padi" />
+                  <SortHead label="Inflasi (%)" k="inflasi_pangan" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -211,16 +198,22 @@ export default function HistoricalPage() {
                   paginatedData.map((row, i) => (
                     <TableRow key={row.date + i}>
                       <TableCell className="font-medium">{formatDate(row.date)}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(row.price)}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">{row.harga_gkg != null ? formatCurrency(row.harga_gkg) : "-"}</TableCell>
-                      <TableCell className="text-right">{row.curah_hujan ?? "-"}</TableCell>
-                      <TableCell className="text-right">{row.produksi_padi != null ? row.produksi_padi.toLocaleString("id-ID") : "-"}</TableCell>
-                      <TableCell className="text-right">{row.inflasi_pangan != null ? row.inflasi_pangan.toFixed(2) : "-"}</TableCell>
+                      <TableCell className="text-right font-semibold tabular-nums">{formatCurrency(row.price)}</TableCell>
+                      <TableCell className="text-right tabular-nums text-muted-foreground">
+                        {row.harga_gkg != null ? formatCurrency(row.harga_gkg) : "-"}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">{row.curah_hujan ?? "-"}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {row.produksi_padi != null ? row.produksi_padi.toLocaleString("id-ID") : "-"}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {row.inflasi_pangan != null ? row.inflasi_pangan.toFixed(2) : "-"}
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                       Data tidak ditemukan.
                     </TableCell>
                   </TableRow>
@@ -228,30 +221,36 @@ export default function HistoricalPage() {
               </TableBody>
             </Table>
           </div>
-          
-          <div className="flex items-center justify-between mt-4">
+
+          <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
             <span className="text-sm text-muted-foreground">
-              Menampilkan {filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredData.length)} dari {filteredData.length} data
+              Menampilkan {filteredData.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} –{" "}
+              {Math.min(currentPage * itemsPerPage, filteredData.length)} dari {filteredData.length} data
             </span>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
-                <ChevronLeft className="h-4 w-4 mr-1" /> Sebelumnya
+                <ChevronLeft className="size-4" /> Sebelumnya
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage >= totalPages || totalPages === 0}
               >
-                Selanjutnya <ChevronRight className="h-4 w-4 ml-1" />
+                Selanjutnya <ChevronRight className="size-4" />
               </Button>
             </div>
           </div>
+
+          <p className="mt-5 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs text-muted-foreground">
+            <Sparkles className="size-3.5 text-secondary" />
+            Sumber: PIHPS Nasional, Badan Pusat Statistik, dan NASA POWER — telah diintegrasikan &amp; ditransformasi untuk pelatihan model.
+          </p>
         </CardContent>
       </Card>
     </div>
