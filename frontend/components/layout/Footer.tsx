@@ -10,8 +10,9 @@ const navLinks = [
 
 const dataSources = [
   { name: "PIHPS Nasional", detail: "Harga Beras", href: "https://www.bi.go.id/hargapangan" },
-  { name: "Badan Pusat Statistik", detail: "GKG · Produksi · Inflasi", href: "https://www.bps.go.id" },
-  { name: "NASA POWER", detail: "Curah Hujan", href: "https://power.larc.nasa.gov" },
+  { name: "Badan Pangan Nasional", detail: "GKG", href: "https://panelharga.badanpangan.go.id" },
+  { name: "Badan Pusat Statistik", detail: "Produksi · Inflasi", href: "https://www.bps.go.id" },
+  { name: "Open-Meteo", detail: "Curah Hujan", href: "https://open-meteo.com" },
 ];
 
 export function Footer() {

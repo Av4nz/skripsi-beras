@@ -114,7 +114,7 @@ export default function ForecastPage() {
                 <Settings2 className="size-5 text-primary" />
                 Parameter Prediksi
               </CardTitle>
-              <CardDescription>Sesuaikan faktor pendukung model XGBoost</CardDescription>
+              <CardDescription>Atur asumsi faktor eksternal untuk skenario prediksi</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePredict} className="space-y-6">
@@ -253,8 +253,8 @@ export default function ForecastPage() {
                     Prediksi Final = Prophet + Koreksi Residual XGBoost
                   </span>
                   <br />
-                  XGBoost mengoreksi kesalahan (residual) Prophet menggunakan faktor eksternal (GKG,
-                  curah hujan, produksi, inflasi, Lebaran).
+                  Faktor eksternal (GKG, curah hujan, produksi, inflasi, Lebaran) membentuk prediksi
+                  dasar Prophet; XGBoost mengoreksi sisa galat dari pola riwayat harga.
                 </CardDescription>
               </CardHeader>
               <CardContent>

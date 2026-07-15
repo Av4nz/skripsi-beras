@@ -77,15 +77,21 @@ const dataSources = [
   },
   {
     icon: <Database />,
-    name: "Badan Pusat Statistik (BPS)",
-    items: ["Harga Gabah Kering Giling (GKG)", "Produksi padi", "Inflasi pangan"],
+    name: "Badan Pangan Nasional (Bapanas)",
+    items: ["Harga Gabah Kering Giling (GKG)"],
     iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
   },
   {
     icon: <CloudRain />,
-    name: "NASA POWER",
-    items: ["Curah hujan historis (berbasis satelit)"],
+    name: "Open-Meteo API",
+    items: ["Curah hujan historis (reanalisis cuaca)"],
     iconClass: "bg-accent/20 text-accent-foreground dark:text-accent",
+  },
+  {
+    icon: <Database />,
+    name: "Badan Pusat Statistik (BPS)",
+    items: ["Produksi padi", "Inflasi pangan"],
+    iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
   },
 ];
 
@@ -109,8 +115,6 @@ export default async function AboutPage() {
   } catch (error) {
     console.error("Failed to fetch metrics", error);
   }
-
-  const bestMape = metricsData.length ? Math.min(...metricsData.map((m) => m.mape)) : null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
@@ -148,7 +152,7 @@ export default async function AboutPage() {
               icon={<Activity />}
               iconClass="bg-primary/10 text-primary"
               title="Prediksi Prophet"
-              desc="Menangkap tren & pola musiman"
+              desc="Menangkap tren, musiman & pengaruh faktor eksternal (regressor)"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep
@@ -161,8 +165,8 @@ export default async function AboutPage() {
             <FlowStep
               icon={<Cpu />}
               iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
-              title="XGBoost Prediksi Residual"
-              desc="Belajar dari curah hujan, inflasi, produksi, GKG, Lebaran"
+              title="XGBoost Koreksi Residual"
+              desc="Mengoreksi sisa galat dari pola riwayat harga (lag & residual)"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep
@@ -177,7 +181,7 @@ export default async function AboutPage() {
 
       {/* Data sources */}
       <section className="mt-6">
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2">
           {dataSources.map((s) => (
             <Card key={s.name} className="h-full gap-3">
               <CardHeader className="flex flex-row items-center gap-3">
@@ -214,8 +218,9 @@ export default async function AboutPage() {
             </p>
             <p>
               Arsitektur hybrid menggabungkan <span className="font-medium text-foreground">Prophet</span>{" "}
-              (unggul pada pola musiman) dengan <span className="font-medium text-foreground">XGBoost</span>{" "}
-              (unggul menemukan pola non-linear faktor eksternal terhadap residual Prophet).
+              (menangkap tren, musiman, dan pengaruh faktor eksternal sebagai regressor) dengan{" "}
+              <span className="font-medium text-foreground">XGBoost</span>{" "}
+              (mengoreksi sisa galat Prophet dari pola riwayat harga).
             </p>
           </CardContent>
         </Card>
@@ -251,7 +256,10 @@ export default async function AboutPage() {
               ))}
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Variabel ini dipakai XGBoost untuk memprediksi residual dan menajamkan hasil Prophet.
+              Variabel ini menjadi <span className="font-medium text-foreground">regressor Prophet</span>{" "}
+              yang membentuk prediksi dasar. Sistem bersifat{" "}
+              <span className="font-medium text-foreground">skenario</span>: prediksi diberikan pada
+              kondisi faktor eksternal yang diasumsikan pengguna.
             </p>
           </CardContent>
         </Card>
@@ -264,6 +272,7 @@ export default async function AboutPage() {
           <CardContent>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {[
+                "Sistem bersifat skenario: akurasi berlaku ketika kondisi faktor eksternal pada periode target diketahui atau diasumsikan.",
                 "Prediksi adalah estimasi berbasis data historis & variabel yang tersedia.",
                 "Kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat memengaruhi harga aktual.",
                 "Faktor di luar dataset tidak dapat dimodelkan sistem.",
@@ -288,7 +297,8 @@ export default async function AboutPage() {
               Perbandingan Performa Model
             </CardTitle>
             <CardDescription>
-              Error antar-model pada data uji. Model dengan MAPE terendah dipakai sebagai model final.
+              Prophet = prediksi dasar; Hybrid = setelah koreksi residual (model yang dipakai sistem).
+              Evaluasi mode skenario, rolling backtest 2024–2026.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -308,7 +318,7 @@ export default async function AboutPage() {
                       .split("_")
                       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
                       .join(" ");
-                    const isBest = bestMape !== null && m.mape === bestMape;
+                    const isBest = m.model === "hybrid";
                     return (
                       <TableRow key={m.model} className={isBest ? "bg-primary/5" : undefined}>
                         <TableCell className="font-medium">

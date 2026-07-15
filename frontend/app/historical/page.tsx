@@ -13,6 +13,31 @@ import { Loader2, Search, ArrowUpDown, ChevronLeft, ChevronRight, Database, Cale
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+function SortHead({
+  label,
+  k,
+  align = "right",
+  onSort,
+}: {
+  label: string;
+  k: keyof HargaBerasSchema;
+  align?: "left" | "right";
+  onSort: (key: keyof HargaBerasSchema) => void;
+}) {
+  return (
+    <TableHead className={align === "right" ? "text-right" : ""}>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onSort(k)}
+        className={`h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground ${align === "right" ? "-mr-2 ml-auto" : "-ml-2"}`}
+      >
+        {label} <ArrowUpDown className="size-3.5 opacity-60" />
+      </Button>
+    </TableHead>
+  );
+}
+
 export default function HistoricalPage() {
   const [data, setData] = useState<HargaBerasSchema[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,19 +134,6 @@ export default function HistoricalPage() {
     downloadTextFile(filename, csv);
     toast.success(`Berhasil mengunduh ${filteredData.length} baris data`);
   };
-
-  const SortHead = ({ label, k, align = "right" }: { label: string; k: keyof HargaBerasSchema; align?: "left" | "right" }) => (
-    <TableHead className={align === "right" ? "text-right" : ""}>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => requestSort(k)}
-        className={`h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground ${align === "right" ? "-mr-2 ml-auto" : "-ml-2"}`}
-      >
-        {label} <ArrowUpDown className="size-3.5 opacity-60" />
-      </Button>
-    </TableHead>
-  );
 
   if (loading) {
     return (
@@ -229,12 +241,12 @@ export default function HistoricalPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/40">
-                  <SortHead label="Bulan/Tahun" k="date" align="left" />
-                  <SortHead label="Harga Beras" k="price" />
-                  <SortHead label="Harga GKG" k="harga_gkg" />
-                  <SortHead label="Curah Hujan (mm)" k="curah_hujan" />
-                  <SortHead label="Produksi (Ton)" k="produksi_padi" />
-                  <SortHead label="Inflasi (%)" k="inflasi_pangan" />
+                  <SortHead label="Bulan/Tahun" k="date" align="left" onSort={requestSort} />
+                  <SortHead label="Harga Beras" k="price" onSort={requestSort} />
+                  <SortHead label="Harga GKG" k="harga_gkg" onSort={requestSort} />
+                  <SortHead label="Curah Hujan (mm)" k="curah_hujan" onSort={requestSort} />
+                  <SortHead label="Produksi (Ton)" k="produksi_padi" onSort={requestSort} />
+                  <SortHead label="Inflasi (%)" k="inflasi_pangan" onSort={requestSort} />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -293,7 +305,7 @@ export default function HistoricalPage() {
 
           <p className="mt-5 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs text-muted-foreground">
             <Sparkles className="size-3.5 text-secondary" />
-            Sumber: PIHPS Nasional, Badan Pusat Statistik, dan NASA POWER — telah diintegrasikan &amp; ditransformasi untuk pelatihan model.
+            Sumber: PIHPS Nasional, Badan Pangan Nasional (Bapanas), Badan Pusat Statistik, dan Open-Meteo — telah diintegrasikan &amp; ditransformasi untuk pelatihan model.
           </p>
         </CardContent>
       </Card>

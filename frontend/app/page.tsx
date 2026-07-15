@@ -353,10 +353,10 @@ export default async function Home() {
                   Dua model, satu prediksi yang lebih tajam
                 </h2>
                 <p className="mt-3 text-muted-foreground">
-                  <span className="font-medium text-foreground">Prophet</span> menangkap tren &amp;
-                  pola musiman, lalu <span className="font-medium text-foreground">XGBoost</span>{" "}
-                  mengoreksi sisa kesalahannya menggunakan faktor eksternal (curah hujan, produksi,
-                  inflasi, harga gabah, Lebaran).
+                  <span className="font-medium text-foreground">Prophet</span> menangkap tren, pola
+                  musiman, dan faktor eksternal (harga gabah, curah hujan, produksi, inflasi) sebagai
+                  regressor; lalu <span className="font-medium text-foreground">XGBoost</span>{" "}
+                  mengoreksi sisa galatnya dari pola riwayat harga.
                 </p>
                 <Link
                   href="/about"
@@ -369,13 +369,13 @@ export default async function Home() {
                 <div className="rounded-2xl border border-border/60 bg-card p-5">
                   <h3 className="font-semibold text-foreground">1 · Facebook Prophet</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    Model dasar untuk menangkap tren jangka panjang dan musiman tahunan harga beras.
+                    Model dasar: menangkap tren jangka panjang, musiman tahunan, dan pengaruh faktor eksternal harga beras.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border/60 bg-card p-5">
                   <h3 className="font-semibold text-foreground">2 · XGBoost (residual)</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    Mempelajari pola galat Prophet dari variabel eksternal untuk menajamkan prediksi.
+                    Mengoreksi sisa galat Prophet dari pola riwayat harga (lag &amp; residual).
                   </p>
                 </div>
               </div>
