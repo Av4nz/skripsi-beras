@@ -1,0 +1,109 @@
+{
+    "prophet_config": {
+        "cps": 0.5,
+        "sps": 10.0,
+        "mode": "multiplicative",
+        "reg_prior_scale": 2.0
+    },
+    "backtest_years": [
+        2024,
+        2025,
+        2026
+    ],
+    "aggregate_mape": {
+        "A. Prophet-only": {
+            "base": 0.04604286600491074,
+            "onestep": 0.040645361089012004,
+            "recursive": 0.04606080276066644,
+            "phi_per_year": {
+                "2024": 1.106536380477636,
+                "2025": -0.5869184584918948,
+                "2026": -0.3655974500551469
+            }
+        },
+        "B. +gkg": {
+            "base": 0.034289636272340974,
+            "onestep": 0.03372524341922617,
+            "recursive": 0.03430120544460364,
+            "phi_per_year": {
+                "2024": 0.5638645679664848,
+                "2025": -0.5646980574109269,
+                "2026": -0.29703734823223776
+            }
+        },
+        "C. +semua eksternal": {
+            "base": 0.029163485553973557,
+            "onestep": 0.028376175897551998,
+            "recursive": 0.029147946615137536,
+            "phi_per_year": {
+                "2024": 0.8174279485539999,
+                "2025": -0.5628633025307418,
+                "2026": -0.33645270202386013
+            }
+        }
+    },
+    "regressor_coefficients_C_2024fit": [
+        {
+            "regressor": "lebaran",
+            "regressor_mode": "multiplicative",
+            "center": 0.0,
+            "coef_lower": -0.017041045,
+            "coef": -0.017041045,
+            "coef_upper": -0.017041045
+        },
+        {
+            "regressor": "harga_gkg",
+            "regressor_mode": "additive",
+            "center": 6216.053668969042,
+            "coef_lower": 0.2396867114941551,
+            "coef": 0.2396867114941551,
+            "coef_upper": 0.2396867114941551
+        },
+        {
+            "regressor": "curah_hujan",
+            "regressor_mode": "additive",
+            "center": 220.56875,
+            "coef_lower": 0.8270965124799564,
+            "coef": 0.8270965124799564,
+            "coef_upper": 0.8270965124799564
+        },
+        {
+            "regressor": "produksi_padi",
+            "regressor_mode": "additive",
+            "center": 43857.83375000001,
+            "coef_lower": -0.004242099088765531,
+            "coef": -0.004242099088765531,
+            "coef_upper": -0.004242099088765531
+        },
+        {
+            "regressor": "inflasi_pangan",
+            "regressor_mode": "additive",
+            "center": 0.5054166666666666,
+            "coef_lower": -40.48625168453786,
+            "coef": -40.48625168453786,
+            "coef_upper": -40.48625168453786
+        }
+    ],
+    "diebold_mariano": {
+        "A base (Prophet-only) vs C base (Prophet+exog)": {
+            "dm": 1.0335224809362928,
+            "p": 0.3102040949419167,
+            "n": 29
+        },
+        "A base (Prophet-only) vs C hybrid one-step": {
+            "dm": 1.1185649166773473,
+            "p": 0.2728307998250437,
+            "n": 29
+        },
+        "C base (Prophet+exog) vs C hybrid one-step (efek AR)": {
+            "dm": 0.18807072147907,
+            "p": 0.8521775940888605,
+            "n": 29
+        },
+        "A hybrid (Prophet-only+AR) vs C hybrid (Prophet+exog+AR)": {
+            "dm": 0.9381414203128187,
+            "p": 0.3561942525429018,
+            "n": 29
+        }
+    }
+}

@@ -1,21 +1,30 @@
 "use client";
 
 import {
+  Area,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
-  Legend
+  Legend,
 } from "recharts";
 import { HargaBerasSchema, StepDetail } from "@/types/api";
+import { cn } from "@/lib/utils";
+import {
+  axisTick,
+  ChartTooltip,
+  legendFormatter,
+  monthShort,
+  rupiahCompact,
+} from "@/components/charts/chart-theme";
 
 interface ForecastChartProps {
   historicalData: HargaBerasSchema[];
   predictions?: StepDetail[];
-  height?: number;
+  className?: string;
 }
 
 interface ChartDataPoint {
@@ -25,9 +34,12 @@ interface ChartDataPoint {
   prophet: number | null;
 }
 
-export function ForecastChart({ historicalData, predictions = [], height = 400 }: ForecastChartProps) {
-  // Combine historical and prediction data
-  const data: ChartDataPoint[] = [...historicalData].map(d => ({
+export function ForecastChart({
+  historicalData,
+  predictions = [],
+  className,
+}: ForecastChartProps) {
+  const data: ChartDataPoint[] = [...historicalData].map((d) => ({
     date: d.date,
     price: d.price,
     predicted: null,
@@ -43,11 +55,11 @@ export function ForecastChart({ historicalData, predictions = [], height = 400 }
         prophet: p.yhat,
       });
     });
-    
+
     // Connect the line from last historical point to first prediction
     if (historicalData.length > 0) {
       const lastHist = historicalData[historicalData.length - 1];
-      const match = data.find(d => d.date === lastHist.date);
+      const match = data.find((d) => d.date === lastHist.date);
       if (match) {
         match.predicted = lastHist.price;
         match.prophet = lastHist.price;
@@ -55,78 +67,84 @@ export function ForecastChart({ historicalData, predictions = [], height = 400 }
     }
   }
 
-  const formatYAxis = (tickItem: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      notation: "compact",
-      compactDisplay: "short",
-    }).format(tickItem);
-  };
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return new Intl.DateTimeFormat("id-ID", { month: "short", year: "2-digit" }).format(d);
-  };
-
   return (
-    <div style={{ width: "100%", height, minHeight: height}}>
+    <div className={cn("h-[300px] w-full sm:h-[400px]", className)}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-          <XAxis 
-            dataKey="date" 
-            tickFormatter={formatDate}
-            stroke="var(--muted-foreground)"
-            fontSize={12}
+        <ComposedChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 8 }}>
+          <defs>
+            <linearGradient id="forecastActualFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--chart-5)" stopOpacity={0.18} />
+              <stop offset="100%" stopColor="var(--chart-5)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="4 4"
+            vertical={false}
+            stroke="var(--border)"
+            strokeOpacity={0.6}
+          />
+          <XAxis
+            dataKey="date"
+            tickFormatter={monthShort}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
-            dy={10}
+            dy={8}
+            minTickGap={24}
           />
-          <YAxis 
-            tickFormatter={formatYAxis}
-            stroke="var(--muted-foreground)"
-            fontSize={12}
+          <YAxis
+            tickFormatter={rupiahCompact}
+            tick={axisTick}
             tickLine={false}
             axisLine={false}
-            dx={-10}
+            width={44}
           />
-          <Tooltip 
-            formatter={(value) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value))}
-            labelFormatter={(label) => formatDate(label as string)}
-            contentStyle={{ backgroundColor: "var(--card)", borderColor: "var(--border)", borderRadius: "8px", color: "var(--card-foreground)" }}
+          <Tooltip
+            content={<ChartTooltip />}
+            cursor={{ stroke: "var(--muted-foreground)", strokeOpacity: 0.3, strokeWidth: 1 }}
           />
-          <Legend wrapperStyle={{ paddingTop: "20px" }} />
-          <Line
+          <Legend
+            iconType="circle"
+            iconSize={9}
+            formatter={legendFormatter}
+            wrapperStyle={{ paddingTop: 16 }}
+          />
+          <Area
             type="monotone"
             dataKey="price"
             name="Harga Aktual"
             stroke="var(--chart-5)"
             strokeWidth={2}
+            fill="url(#forecastActualFill)"
             dot={false}
-            activeDot={{ r: 6 }}
+            activeDot={{ r: 5, strokeWidth: 0 }}
+            connectNulls
           />
           {predictions.length > 0 && (
             <>
               <Line
                 type="monotone"
                 dataKey="prophet"
-                name="Prophet Base"
-                stroke="var(--chart-3)"
+                name="Prophet (baseline)"
+                stroke="var(--accent)"
                 strokeWidth={2}
-                strokeDasharray="5 5"
+                strokeDasharray="5 4"
                 dot={false}
+                connectNulls
               />
               <Line
                 type="monotone"
                 dataKey="predicted"
-                name="Hybrid Forecast"
+                name="Prediksi Hybrid"
                 stroke="var(--primary)"
-                strokeWidth={3}
-                dot={{ r: 4, strokeWidth: 2 }}
-                activeDot={{ r: 8 }}
+                strokeWidth={2.5}
+                dot={{ r: 3, strokeWidth: 0, fill: "var(--primary)" }}
+                activeDot={{ r: 6, strokeWidth: 0 }}
+                connectNulls
               />
             </>
           )}
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );

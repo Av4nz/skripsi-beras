@@ -1,0 +1,58 @@
+{
+    "dataset": "harga_beras_2018_2026.csv",
+    "data_range": [
+        "2018-01-01",
+        "2026-05-01"
+    ],
+    "train_start_year": 2021,
+    "final_train_years": "2021..2026",
+    "backtest_years": [
+        2024,
+        2025,
+        2026
+    ],
+    "prophet_best_params": {
+        "changepoint_prior_scale": 0.5,
+        "seasonality_prior_scale": 10.0,
+        "seasonality_mode": "multiplicative"
+    },
+    "xgb_best_params": {
+        "subsample": 0.7,
+        "reg_lambda": 5.0,
+        "reg_alpha": 0,
+        "n_estimators": 30,
+        "min_child_weight": 7,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "gamma": 1.0,
+        "colsample_bytree": 1.0
+    },
+    "per_year": [
+        {
+            "year": 2024,
+            "prophet_only_mape": 0.04552359099132197,
+            "hybrid_mape": 0.045523591346341576,
+            "recursive_mape": 0.045523591346341576
+        },
+        {
+            "year": 2025,
+            "prophet_only_mape": 0.02990094437660437,
+            "hybrid_mape": 0.029900934592930344,
+            "recursive_mape": 0.029900934592930344
+        },
+        {
+            "year": 2026,
+            "prophet_only_mape": 0.014996836236965863,
+            "hybrid_mape": 0.01580670722309557,
+            "recursive_mape": 0.014726036991030417
+        }
+    ],
+    "aggregate": {
+        "prophet_only_mape": 0.03379581398620501,
+        "hybrid_mape": 0.03393544301333589,
+        "recursive_mape": 0.033749120559531554,
+        "hybrid_mae": 492.98302289745965,
+        "hybrid_rmse": 743.9749498097901,
+        "recursive_mae": 490.3465601761283
+    }
+}

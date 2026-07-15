@@ -1,0 +1,43 @@
+{
+    "architecture": "Prophet(+exog regressors) + Linear AR residual",
+    "prophet_regressors": [
+        "lebaran",
+        "harga_gkg"
+    ],
+    "changepoint_prior_scale": 0.3,
+    "seasonality_mode": "additive",
+    "ar_order": 1,
+    "train_window": "2021..2026",
+    "per_year": [
+        {
+            "year": 2024,
+            "prophet_only": 0.05133396497341955,
+            "hybrid_linear": 0.01946044015965069,
+            "hybrid_recursive": 0.05133397710392106,
+            "xgb_ref": 0.05133397045414754
+        },
+        {
+            "year": 2025,
+            "prophet_only": 0.03318442602719892,
+            "hybrid_linear": 0.04395822445443667,
+            "hybrid_recursive": 0.0331957889266582,
+            "xgb_ref": 0.034485445126995196
+        },
+        {
+            "year": 2026,
+            "prophet_only": 0.011939980138159514,
+            "hybrid_linear": 0.013190721683106347,
+            "hybrid_recursive": 0.011900489855429464,
+            "xgb_ref": 0.013921150388071518
+        }
+    ],
+    "aggregate": {
+        "prophet_only": 0.03703174457580067,
+        "hybrid_linear": 0.02851646840636483,
+        "hybrid_recursive": 0.03702964281531375,
+        "xgb_ref": 0.03791168065220932,
+        "hybrid_mae": 405.87379917433765,
+        "hybrid_rmse": 515.8149257247779,
+        "residual_oos_r2": 0.2633693282606707
+    }
+}
