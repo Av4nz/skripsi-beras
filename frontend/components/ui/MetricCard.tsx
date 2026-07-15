@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { cn } from "@/lib/utils";
-import { Info, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { TrendingDown, TrendingUp, Minus } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
@@ -40,14 +41,7 @@ export function MetricCard({
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-medium text-muted-foreground">{title}</span>
-          {tooltip && (
-            <span
-              title={tooltip}
-              className="cursor-help text-muted-foreground/60 transition-colors hover:text-muted-foreground"
-            >
-              <Info className="h-3.5 w-3.5" />
-            </span>
-          )}
+          {tooltip && <InfoTooltip content={tooltip} label={`Info: ${title}`} />}
         </div>
         {icon && (
           <span
