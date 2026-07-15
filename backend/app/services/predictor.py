@@ -10,10 +10,15 @@ def get_last_n_prices(db: Session, n: int = 3):
     records = db.query(HargaBeras).order_by(HargaBeras.date.desc()).limit(n).all()
     return list(reversed(records))
 
-def get_historical_residuals(db: Session, dates, prices, lebaran_past, prophet):
+def get_historical_residuals(db: Session, dates, prices, lebaran_past, exog_past, prophet):
     """
     Tries to fetch the last 2 residuals from the prediction history table.
     If not available, falls back to calculating dynamically using the Prophet model.
+
+    NOTE: Prophet now carries external regressors (harga_gkg, curah_hujan,
+    produksi_padi, inflasi_pangan). The dynamic-residual fallback therefore
+    supplies the ACTUAL historical exogenous values (from `exog_past`) so the
+    Prophet.predict call has every registered regressor available.
     """
     R_T_minus_1 = None
     R_T0 = None
@@ -31,7 +36,11 @@ def get_historical_residuals(db: Session, dates, prices, lebaran_past, prophet):
     if R_T_minus_1 is None or R_T0 is None:
         past_dates_df = pd.DataFrame({
             "ds": dates[1:3],
-            "lebaran": lebaran_past[1:3]
+            "lebaran": lebaran_past[1:3],
+            "harga_gkg": [exog_past[1]["harga_gkg"], exog_past[2]["harga_gkg"]],
+            "curah_hujan": [exog_past[1]["curah_hujan"], exog_past[2]["curah_hujan"]],
+            "produksi_padi": [exog_past[1]["produksi_padi"], exog_past[2]["produksi_padi"]],
+            "inflasi_pangan": [exog_past[1]["inflasi_pangan"], exog_past[2]["inflasi_pangan"]],
         })
         prophet_past_pred = prophet.predict(past_dates_df)
         
@@ -62,6 +71,12 @@ def predict_hybrid(db: Session, request: PredictionRequest):
     P = [r.price for r in last_records]
     dates = [r.date for r in last_records]
     lebaran_past = [r.lebaran for r in last_records]
+    # Historical exogenous values (needed because Prophet now has exog regressors).
+    exog_past = [
+        {"harga_gkg": r.harga_gkg, "curah_hujan": r.curah_hujan,
+         "produksi_padi": r.produksi_padi, "inflasi_pangan": r.inflasi_pangan}
+        for r in last_records
+    ]
 
     # Resolve External Features (Fallback to last known if missing)
     if request.external_features is not None:
@@ -79,7 +94,7 @@ def predict_hybrid(db: Session, request: PredictionRequest):
         )
 
     # Get residuals (T-1, T0)
-    R_T_minus_1, R_T0 = get_historical_residuals(db, dates, P, lebaran_past, prophet)
+    R_T_minus_1, R_T0 = get_historical_residuals(db, dates, P, lebaran_past, exog_past, prophet)
     R = [0, R_T_minus_1, R_T0]
 
     predictions = []
@@ -120,7 +135,11 @@ def predict_hybrid(db: Session, request: PredictionRequest):
         # 1. Base Prophet Prediction
         future_df = pd.DataFrame({
             "ds": [current_date],
-            "lebaran": [ext_feat.lebaran]
+            "lebaran": [ext_feat.lebaran],
+            "harga_gkg": [ext_feat.harga_gkg],
+            "curah_hujan": [ext_feat.curah_hujan],
+            "produksi_padi": [ext_feat.produksi_padi],
+            "inflasi_pangan": [ext_feat.inflasi_pangan],
         })
         prophet_pred = prophet.predict(future_df)
         yhat = float(prophet_pred.loc[0, "yhat"])

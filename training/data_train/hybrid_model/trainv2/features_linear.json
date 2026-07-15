@@ -1,0 +1,9 @@
+{
+    "prophet_regressors": [
+        "lebaran",
+        "harga_gkg"
+    ],
+    "residual_features": [
+        "residual_lag_1"
+    ]
+}

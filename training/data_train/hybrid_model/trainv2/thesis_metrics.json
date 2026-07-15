@@ -1,0 +1,63 @@
+{
+    "dataset": "harga_beras_2018_2026.csv",
+    "train_period": [
+        "2021-04-01",
+        "2024-12-01"
+    ],
+    "test_period": [
+        "2025-01-01",
+        "2025-12-01"
+    ],
+    "train_start_year": 2021,
+    "test_year": 2025,
+    "note_2018_2020": "dibuang dari pemodelan (rezim harga lama ~11rb)",
+    "prophet_params": {
+        "changepoint_prior_scale": 0.5,
+        "seasonality_prior_scale": 10.0,
+        "seasonality_mode": "multiplicative"
+    },
+    "xgb_params": {
+        "subsample": 0.7,
+        "reg_lambda": 5.0,
+        "reg_alpha": 0,
+        "n_estimators": 30,
+        "min_child_weight": 7,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "gamma": 1.0,
+        "colsample_bytree": 1.0
+    },
+    "results": {
+        "Prophet-only": {
+            "one_step": {
+                "MAE": 422.0345588662355,
+                "RMSE": 611.697877728277,
+                "MAPE": 0.029900944376604382
+            }
+        },
+        "XGBoost-only": {
+            "one_step": {
+                "MAE": 111.42129557291673,
+                "RMSE": 154.0142076874247,
+                "MAPE": 0.007825281401487789
+            },
+            "recursive": {
+                "MAE": 114.58407552083327,
+                "RMSE": 163.57384439120406,
+                "MAPE": 0.008064123802475136
+            }
+        },
+        "Hybrid (Prophet+XGBoost)": {
+            "one_step": {
+                "MAE": 422.0344229086034,
+                "RMSE": 611.6976361878158,
+                "MAPE": 0.02990093459293035
+            },
+            "recursive": {
+                "MAE": 422.0344229086034,
+                "RMSE": 611.6976361878158,
+                "MAPE": 0.02990093459293035
+            }
+        }
+    }
+}
