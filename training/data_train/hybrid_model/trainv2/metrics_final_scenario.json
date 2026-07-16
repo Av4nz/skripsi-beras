@@ -1,0 +1,90 @@
+{
+    "architecture": "Prophet(lebaran+4exog regressor) + XGBoost(residual, AR features)",
+    "mode": "scenario (exog kontemporer diasumsikan diketahui)",
+    "data_range": [
+        "2021-01-01",
+        "2026-05-01"
+    ],
+    "prophet": {
+        "cps": 0.5,
+        "sps": 10.0,
+        "mode": "multiplicative",
+        "reg_prior_scale": 2.0,
+        "regressors": [
+            "lebaran",
+            "harga_gkg",
+            "curah_hujan",
+            "produksi_padi",
+            "inflasi_pangan"
+        ]
+    },
+    "xgb_features": [
+        "residual_lag_1",
+        "residual_lag_2",
+        "lag_1",
+        "lag_2",
+        "rolling_mean_3",
+        "month_sin",
+        "month_cos"
+    ],
+    "xgb_params": {
+        "subsample": 0.8,
+        "reg_lambda": 0.5,
+        "reg_alpha": 0.1,
+        "n_estimators": 200,
+        "min_child_weight": 3,
+        "max_depth": 3,
+        "learning_rate": 0.01,
+        "gamma": 0,
+        "colsample_bytree": 0.8
+    },
+    "backtest_per_year": {
+        "2024": {
+            "base": 0.03784177280213871,
+            "hybrid": 0.03784177215772316,
+            "recursive": 0.03784177215772316
+        },
+        "2025": {
+            "base": 0.027230468844480587,
+            "hybrid": 0.027409337995497093,
+            "recursive": 0.027232448564470945
+        },
+        "2026": {
+            "base": 0.012974836261160291,
+            "hybrid": 0.013570498937563753,
+            "recursive": 0.013238463487015925
+        }
+    },
+    "backtest_aggregate": {
+        "base": 0.029163485553973557,
+        "hybrid": 0.029340200569877996,
+        "recursive": 0.029209757451772716,
+        "base_mae": 423.6912108544542,
+        "base_rmse": 634.8029812429581,
+        "hybrid_mae": 426.1951962238034,
+        "hybrid_rmse": 637.058634801903
+    },
+    "regressor_coefficients": [
+        {
+            "regressor": "lebaran",
+            "coef": -0.0076005889
+        },
+        {
+            "regressor": "harga_gkg",
+            "coef": 0.12281368642690525
+        },
+        {
+            "regressor": "curah_hujan",
+            "coef": -0.0873396050227836
+        },
+        {
+            "regressor": "produksi_padi",
+            "coef": -0.0014628181138031996
+        },
+        {
+            "regressor": "inflasi_pangan",
+            "coef": -13.857317455281857
+        }
+    ],
+    "leakage_note": "exog coincident; dgn lag-1 MAPE ~9.91% (lihat experiment_final_check.json)"
+}

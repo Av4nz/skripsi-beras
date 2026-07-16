@@ -1,0 +1,32 @@
+{
+    "config": "Prophet(lebaran+4exog) + XGBoost(7 fitur AR)",
+    "cv": "RandomizedSearchCV 100 iter, TimeSeriesSplit(4), scoring=neg MAE",
+    "xgb_inherited": {
+        "subsample": 0.7,
+        "reg_lambda": 5.0,
+        "reg_alpha": 0,
+        "n_estimators": 30,
+        "min_child_weight": 7,
+        "max_depth": 4,
+        "learning_rate": 0.1,
+        "gamma": 1.0,
+        "colsample_bytree": 1.0
+    },
+    "xgb_tuned_final": {
+        "subsample": 0.8,
+        "reg_lambda": 0.5,
+        "reg_alpha": 0.1,
+        "n_estimators": 200,
+        "min_child_weight": 3,
+        "max_depth": 3,
+        "learning_rate": 0.01,
+        "gamma": 0,
+        "colsample_bytree": 0.8
+    },
+    "backtest_aggregate": {
+        "prophet_base": 0.029163485553973557,
+        "hybrid_inherited": 0.02934994748417767,
+        "hybrid_tuned": 0.029340200569877996,
+        "delta_pp": -0.0009746914299675613
+    }
+}
