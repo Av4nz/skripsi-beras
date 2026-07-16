@@ -54,9 +54,13 @@ export default async function Home() {
     );
   }
   
-  // Sort metrics by MAPE ascending to automatically display the best performing model (Tuned Hybrid)
-  const sortedMetrics = [...metricsData].sort((a, b) => a.mape - b.mape);
-  const metrics = sortedMetrics[0] || { mae: 0, mape: 0, rmse: 0 };
+  // Display the metrics of the model actually deployed for predictions (tuned hybrid),
+  // not merely whichever model happens to have the lowest MAPE.
+  const metrics =
+    metricsData.find((m) => m.model === "hybrid_tuned") ??
+    metricsData.find((m) => m.model === "hybrid") ??
+    metricsData[0] ??
+    { mae: 0, mape: 0, rmse: 0 };
   
   // Calculate latest price and trend
   const latestData = historical[historical.length - 1];
