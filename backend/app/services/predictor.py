@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import datetime
 from sqlalchemy.orm import Session
-from app.models.db_models import HargaBeras, Prediksi
+from app.models.db_models import HargaBeras
 from app.schemas.schemas import PredictionRequest, TimeSeriesPoint, ExternalFeatures
 from app.services.model_loader import get_prophet_model, get_xgb_model, get_features_config
 
@@ -10,48 +10,31 @@ def get_last_n_prices(db: Session, n: int = 3):
     records = db.query(HargaBeras).order_by(HargaBeras.date.desc()).limit(n).all()
     return list(reversed(records))
 
-def get_historical_residuals(db: Session, dates, prices, lebaran_past, exog_past, prophet):
+def get_historical_residuals(dates, prices, lebaran_past, exog_past, prophet):
     """
-    Tries to fetch the last 2 residuals from the prediction history table.
-    If not available, falls back to calculating dynamically using the Prophet model.
+    Compute the last 2 residuals (T-1, T0) dynamically from the Prophet model.
 
-    NOTE: Prophet now carries external regressors (harga_gkg, curah_hujan,
-    produksi_padi, inflasi_pangan). The dynamic-residual fallback therefore
-    supplies the ACTUAL historical exogenous values (from `exog_past`) so the
-    Prophet.predict call has every registered regressor available.
+    NOTE: Prophet carries external regressors (harga_gkg, curah_hujan,
+    produksi_padi, inflasi_pangan), so the ACTUAL historical exogenous values
+    (from `exog_past`) are supplied to Prophet.predict to ensure every
+    registered regressor is available.
     """
-    R_T_minus_1 = None
-    R_T0 = None
-    
-    # Try fetching from DB
-    pred_t_minus_1 = db.query(Prediksi).filter(Prediksi.date == dates[1]).first()
-    pred_t0 = db.query(Prediksi).filter(Prediksi.date == dates[2]).first()
-    
-    if pred_t_minus_1 and pred_t_minus_1.residual is not None:
-        R_T_minus_1 = pred_t_minus_1.residual
-    if pred_t0 and pred_t0.residual is not None:
-        R_T0 = pred_t0.residual
-        
-    # Fallback to dynamic calculation
-    if R_T_minus_1 is None or R_T0 is None:
-        past_dates_df = pd.DataFrame({
-            "ds": dates[1:3],
-            "lebaran": lebaran_past[1:3],
-            "harga_gkg": [exog_past[1]["harga_gkg"], exog_past[2]["harga_gkg"]],
-            "curah_hujan": [exog_past[1]["curah_hujan"], exog_past[2]["curah_hujan"]],
-            "produksi_padi": [exog_past[1]["produksi_padi"], exog_past[2]["produksi_padi"]],
-            "inflasi_pangan": [exog_past[1]["inflasi_pangan"], exog_past[2]["inflasi_pangan"]],
-        })
-        prophet_past_pred = prophet.predict(past_dates_df)
-        
-        yhat_T_minus_1 = prophet_past_pred.loc[0, "yhat"]
-        yhat_T0 = prophet_past_pred.loc[1, "yhat"]
-        
-        if R_T_minus_1 is None:
-            R_T_minus_1 = prices[1] - yhat_T_minus_1
-        if R_T0 is None:
-            R_T0 = prices[2] - yhat_T0
-            
+    past_dates_df = pd.DataFrame({
+        "ds": dates[1:3],
+        "lebaran": lebaran_past[1:3],
+        "harga_gkg": [exog_past[1]["harga_gkg"], exog_past[2]["harga_gkg"]],
+        "curah_hujan": [exog_past[1]["curah_hujan"], exog_past[2]["curah_hujan"]],
+        "produksi_padi": [exog_past[1]["produksi_padi"], exog_past[2]["produksi_padi"]],
+        "inflasi_pangan": [exog_past[1]["inflasi_pangan"], exog_past[2]["inflasi_pangan"]],
+    })
+    prophet_past_pred = prophet.predict(past_dates_df)
+
+    yhat_T_minus_1 = prophet_past_pred.loc[0, "yhat"]
+    yhat_T0 = prophet_past_pred.loc[1, "yhat"]
+
+    R_T_minus_1 = prices[1] - yhat_T_minus_1
+    R_T0 = prices[2] - yhat_T0
+
     return R_T_minus_1, R_T0
 
 def predict_hybrid(db: Session, request: PredictionRequest):
@@ -94,7 +77,7 @@ def predict_hybrid(db: Session, request: PredictionRequest):
         )
 
     # Get residuals (T-1, T0)
-    R_T_minus_1, R_T0 = get_historical_residuals(db, dates, P, lebaran_past, exog_past, prophet)
+    R_T_minus_1, R_T0 = get_historical_residuals(dates, P, lebaran_past, exog_past, prophet)
     R = [0, R_T_minus_1, R_T0]
 
     predictions = []

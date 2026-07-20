@@ -22,29 +22,7 @@ def get_historical_data(skip: int = 0, limit: int = 100, db: Session = Depends(g
     records = db.query(db_models.HargaBeras).order_by(db_models.HargaBeras.date.desc()).offset(skip).limit(limit).all()
     return records
 
-@router.get("/data/predictions", response_model=List[schemas.PrediksiSchema])
-def get_saved_predictions(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    records = db.query(db_models.Prediksi).order_by(db_models.Prediksi.date.desc()).offset(skip).limit(limit).all()
-    return records
-
 @router.get("/metrics", response_model=List[schemas.MetricsSchema])
 def get_metrics(db: Session = Depends(get_db)):
     records = db.query(db_models.Metrics).all()
     return records
-
-@router.post("/predictions/save", response_model=schemas.PrediksiSchema)
-def save_prediction(request: schemas.SavePredictionRequest, db: Session = Depends(get_db)):
-    new_prediction = db_models.Prediksi(
-        date=request.date,
-        result=request.result,
-        residual=request.residual,
-        model=request.model
-    )
-    db.add(new_prediction)
-    try:
-        db.commit()
-        db.refresh(new_prediction)
-        return new_prediction
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=f"Failed to save prediction: {str(e)}")

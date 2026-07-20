@@ -26,12 +26,7 @@ def test_prediction():
         print(f"Next Prediction: {data['prediction']}")
         print(f"Features Used (First Step): {json.dumps(data['details']['steps'][0]['features_used'], indent=2)}")
         print(f"Time Series Points returned: {len(data['series'])}")
-        
-        # Optionally, save this prediction to the DB using our save endpoint
-        # Passing the residual from the first step details
-        residual_val = data['details']['steps'][0]['residual']
-        # test_save_prediction(data['prediction'], residual_val)
-        
+
         print("\n=== Testing POST /predict (Fallback without external_features) ===")
         fallback_payload = {"period": 2}
         resp_fallback = requests.post(f"{BASE_URL}/predict", json=fallback_payload)
@@ -44,29 +39,6 @@ def test_prediction():
         if e.response is not None:
             print(f"Details: {e.response.text}")
 
-# def test_save_prediction(prediction_value, residual):
-#     print("\n=== Testing POST /predictions/save ===")
-    
-#     if isinstance(prediction_value, list):
-#         prediction_value = prediction_value[0]
-        
-#     payload = {
-#         "date": "2026-10-01",
-#         "result": float(prediction_value),
-#         "residual": float(residual),
-#         "model": "hybrid"
-#     }
-    
-#     try:
-#         response = requests.post(f"{BASE_URL}/predictions/save", json=payload)
-#         response.raise_for_status()
-#         print("✅ Save Successful!")
-#         print(response.json())
-#     except requests.exceptions.RequestException as e:
-#         print(f"❌ Save Failed: {e}")
-#         if e.response is not None:
-#             print(f"Details: {e.response.text}")
-
 def test_get_historical():
     print("\n=== Testing GET /data/historical ===")
     try:
@@ -77,17 +49,6 @@ def test_get_historical():
         print(f"Retrieved {len(data)} records.")
     except requests.exceptions.RequestException as e:
         print(f"❌ Fetch Historical Data Failed: {e}")
-
-def test_get_predictions():
-    print("\n=== Testing GET /data/predictions ===")
-    try:
-        response = requests.get(f"{BASE_URL}/data/predictions?limit=5")
-        response.raise_for_status()
-        data = response.json()
-        print("✅ Fetch Predictions Successful!")
-        print(f"Retrieved {len(data)} saved predictions.")
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Fetch Predictions Failed: {e}")
 
 def test_get_metrics():
     print("\n=== Testing GET /metrics ===")
@@ -106,5 +67,4 @@ if __name__ == "__main__":
     
     test_get_historical()
     test_prediction()
-    test_get_predictions()
     test_get_metrics()

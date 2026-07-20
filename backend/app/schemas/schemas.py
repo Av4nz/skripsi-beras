@@ -46,16 +46,6 @@ class HargaBerasSchema(BaseModel):
     class Config:
         from_attributes = True
 
-class PrediksiSchema(BaseModel):
-    id: int
-    date: datetime.date
-    result: float
-    residual: Optional[float] = None
-    model: str
-
-    class Config:
-        from_attributes = True
-
 class MetricsSchema(BaseModel):
     model: str
     mae: float
@@ -64,9 +54,3 @@ class MetricsSchema(BaseModel):
 
     class Config:
         from_attributes = True
-
-class SavePredictionRequest(BaseModel):
-    date: datetime.date
-    result: float
-    residual: Optional[float] = None
-    model: str = "hybrid"

@@ -14,16 +14,6 @@ class HargaBeras(Base):
     produksi_padi = Column(Float, nullable=True)
     inflasi_pangan = Column(Float, nullable=True)
 
-class Prediksi(Base):
-    __tablename__ = "prediksi"
-
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, unique=True, index=True, nullable=False)
-    result = Column(Float, nullable=False)
-    residual = Column(Float, nullable=True)
-    model = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-
 class Metrics(Base):
     __tablename__ = "metrics"
 
