@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { ForecastChart } from "@/components/charts/ForecastChart";
 import { apiService } from "@/services/api";
 import { HargaBerasSchema, StepDetail } from "@/types/api";
-import { Loader2, Settings2, Sparkles, LineChart, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Loader2, Settings2, Sparkles, LineChart, TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 
@@ -24,6 +24,7 @@ const monthLong = (dateStr: string) =>
 export default function ForecastPage() {
   const [historicalData, setHistoricalData] = useState<HargaBerasSchema[]>([]);
   const [predictions, setPredictions] = useState<StepDetail[]>([]);
+  const [selectedStep, setSelectedStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -74,6 +75,7 @@ export default function ForecastPage() {
         },
       });
       setPredictions(result.details?.steps || []);
+      setSelectedStep(0);
       toast.success("Simulasi berhasil dijalankan", { id: "predict-success" });
     } catch (error) {
       console.error("Prediction failed", error);
@@ -89,6 +91,12 @@ export default function ForecastPage() {
   const changeTrend: "up" | "down" | "stable" = change > 0 ? "up" : change < 0 ? "down" : "stable";
   const ChangeIcon = changeTrend === "up" ? TrendingUp : changeTrend === "down" ? TrendingDown : Minus;
   const changeVariant = changeTrend === "up" ? "destructive" : changeTrend === "down" ? "success" : "muted";
+
+  const selectedPred = predictions[selectedStep];
+  const selectedDecomp = selectedPred?.decomposition;
+  const maxAbsContribution = selectedDecomp
+    ? Math.max(...selectedDecomp.components.map((c) => Math.abs(c.contribution)), 1)
+    : 1;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
@@ -269,8 +277,14 @@ export default function ForecastPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {predictions.map((p) => (
-                        <TableRow key={p.date}>
+                      {predictions.map((p, idx) => (
+                        <TableRow
+                          key={p.date}
+                          onClick={() => setSelectedStep(idx)}
+                          className={`cursor-pointer transition-colors hover:bg-muted/40 ${
+                            idx === selectedStep ? "bg-primary/5" : ""
+                          }`}
+                        >
                           <TableCell className="font-medium">{monthLong(p.date)}</TableCell>
                           <TableCell className="text-right tabular-nums">{formatCurrency(p.yhat)}</TableCell>
                           <TableCell
@@ -289,6 +303,67 @@ export default function ForecastPage() {
                     </TableBody>
                   </Table>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {selectedDecomp && selectedPred && (
+            <Card className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="size-5 text-primary" />
+                  Faktor Pembentuk Prediksi
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Rincian komponen prediksi dasar Prophet untuk{" "}
+                  <span className="font-semibold text-foreground">{monthLong(selectedPred.date)}</span>:
+                  nilai tren ditambah kontribusi pola musiman dan tiap faktor eksternal. Klik bulan lain
+                  pada tabel di atas untuk melihat rinciannya.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/30 p-3.5">
+                  <span className="text-sm font-medium text-muted-foreground">Tren dasar (baseline)</span>
+                  <span className="font-sans text-lg font-semibold tabular-nums">
+                    {formatCurrency(selectedDecomp.trend)}
+                  </span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {[...selectedDecomp.components]
+                    .sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution))
+                    .map((c) => {
+                      const pct = (Math.abs(c.contribution) / maxAbsContribution) * 100;
+                      const positive = c.contribution >= 0;
+                      return (
+                        <div key={c.name} className="flex items-center gap-3">
+                          <span className="w-32 shrink-0 truncate text-sm text-foreground" title={c.label}>
+                            {c.label}
+                          </span>
+                          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className={`h-full rounded-full ${positive ? "bg-primary" : "bg-destructive"}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span
+                            className={`w-24 shrink-0 text-right text-sm font-medium tabular-nums ${
+                              positive ? "text-primary" : "text-destructive dark:text-red-400"
+                            }`}
+                          >
+                            {positive ? "+" : "-"}
+                            {formatCurrency(Math.abs(c.contribution))}
+                          </span>
+                        </div>
+                      );
+                    })}
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  Nilai ini menjelaskan prediksi dasar Prophet ({formatCurrency(selectedPred.yhat)}).
+                  Hasil akhir hybrid ({formatCurrency(selectedPred.final_prediction)}) juga mencakup
+                  koreksi residual XGBoost dan batas keluaran sistem.
+                </p>
               </CardContent>
             </Card>
           )}

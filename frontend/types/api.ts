@@ -17,6 +17,17 @@ export interface TimeSeriesPoint {
   type: string; // "actual" | "forecast"
 }
 
+export interface DecompositionComponent {
+  name: string;
+  label: string;
+  contribution: number;
+}
+
+export interface PredictionDecomposition {
+  trend: number;
+  components: DecompositionComponent[];
+}
+
 export interface StepDetail {
   step: number;
   date: string;
@@ -24,6 +35,7 @@ export interface StepDetail {
   residual: number;
   final_prediction: number;
   features_used: Record<string, number>;
+  decomposition?: PredictionDecomposition | null;
 }
 
 export interface PredictionDetails {

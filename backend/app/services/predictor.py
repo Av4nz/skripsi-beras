@@ -6,6 +6,57 @@ from app.models.db_models import HargaBeras
 from app.schemas.schemas import PredictionRequest, TimeSeriesPoint, ExternalFeatures
 from app.services.model_loader import get_prophet_model, get_xgb_model, get_features_config
 
+# Human-readable labels for the prediction decomposition components.
+REGRESSOR_LABELS = {
+    "harga_gkg": "Harga Gabah Kering Giling",
+    "curah_hujan": "Curah Hujan",
+    "produksi_padi": "Produksi Padi",
+    "inflasi_pangan": "Inflasi Pangan",
+    "lebaran": "Lebaran (Idulfitri)",
+}
+SEASONALITY_LABELS = {
+    "yearly": "Pola Musiman Tahunan",
+    "weekly": "Pola Musiman Mingguan",
+    "daily": "Pola Musiman Harian",
+}
+
+
+def compute_decomposition(prophet, prophet_pred):
+    """
+    Descriptive breakdown of a single Prophet base prediction into
+    trend + seasonal + external-regressor contributions (in Rupiah).
+
+    For multiplicative components, the Rupiah contribution is approximated as
+    trend * component_factor, so that trend + sum(contributions) ~= yhat.
+    This describes the Prophet base prediction only; the final hybrid value
+    additionally includes a small XGBoost residual correction and output bounds.
+    Returns None if components cannot be extracted (kept optional/safe).
+    """
+    try:
+        row = prophet_pred.iloc[0]
+        trend = float(row["trend"])
+        components = []
+
+        def add_component(name, label, mode):
+            if name not in prophet_pred.columns:
+                return
+            value = float(row[name])
+            contribution = trend * value if mode == "multiplicative" else value
+            components.append({"name": name, "label": label, "contribution": contribution})
+
+        # Seasonal components (e.g., yearly)
+        for name, cfg in getattr(prophet, "seasonalities", {}).items():
+            add_component(name, SEASONALITY_LABELS.get(name, name), cfg.get("mode"))
+
+        # External-regressor components (the 5 supporting variables)
+        for name, cfg in getattr(prophet, "extra_regressors", {}).items():
+            add_component(name, REGRESSOR_LABELS.get(name, name), cfg.get("mode"))
+
+        return {"trend": trend, "components": components}
+    except Exception:
+        return None
+
+
 def get_last_n_prices(db: Session, n: int = 3):
     records = db.query(HargaBeras).order_by(HargaBeras.date.desc()).limit(n).all()
     return list(reversed(records))
@@ -126,7 +177,11 @@ def predict_hybrid(db: Session, request: PredictionRequest):
         })
         prophet_pred = prophet.predict(future_df)
         yhat = float(prophet_pred.loc[0, "yhat"])
-        
+
+        # Descriptive decomposition of the Prophet base prediction
+        # (trend + seasonal + external-regressor contributions).
+        decomposition = compute_decomposition(prophet, prophet_pred)
+
         # 2. XGBoost Residual Correction
         # Feature Ordering Safety: Ensure exact order and check for missing features
         feature_cols = features_config["features"]
@@ -168,7 +223,8 @@ def predict_hybrid(db: Session, request: PredictionRequest):
             "yhat": yhat,
             "residual": predicted_residual,
             "final_prediction": final_prediction,
-            "features_used": features_dict
+            "features_used": features_dict,
+            "decomposition": decomposition
         })
         
         # Update P and R for next iteration
