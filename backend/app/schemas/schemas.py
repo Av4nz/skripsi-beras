@@ -18,6 +18,15 @@ class TimeSeriesPoint(BaseModel):
     value: float
     type: str = Field(description="'actual' or 'forecast'")
 
+class DecompositionComponent(BaseModel):
+    name: str
+    label: str
+    contribution: float = Field(description="Estimated contribution to the prediction, in Rupiah")
+
+class PredictionDecomposition(BaseModel):
+    trend: float = Field(description="Baseline trend value in Rupiah")
+    components: List[DecompositionComponent]
+
 class StepDetail(BaseModel):
     step: int
     date: datetime.date
@@ -25,6 +34,7 @@ class StepDetail(BaseModel):
     residual: float
     final_prediction: float
     features_used: Dict[str, float]
+    decomposition: Optional[PredictionDecomposition] = None
 
 class PredictionDetails(BaseModel):
     steps: List[StepDetail]
