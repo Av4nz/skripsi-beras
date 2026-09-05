@@ -115,7 +115,7 @@ export default function ForecastPage() {
 
       <div className="mt-10 grid gap-6 lg:grid-cols-5">
         {/* Form */}
-        <div className="flex flex-col gap-6 lg:col-span-2">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -193,7 +193,7 @@ export default function ForecastPage() {
         </div>
 
         {/* Results */}
-        <div className="flex flex-col gap-6 lg:col-span-3">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-3">
           {/* Result hero */}
           {lastStep && (
             <Card className="bg-hero-gradient ring-primary/20 animate-in fade-in slide-in-from-bottom-3 duration-500">
