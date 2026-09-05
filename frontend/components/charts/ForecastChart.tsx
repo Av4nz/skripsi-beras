@@ -68,7 +68,7 @@ export function ForecastChart({
   }
 
   return (
-    <div className={cn("h-[300px] w-full sm:h-[400px]", className)}>
+    <div className={cn("h-[300px] w-full min-w-0 overflow-hidden sm:h-[400px]", className)}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 8 }}>
           <defs>
