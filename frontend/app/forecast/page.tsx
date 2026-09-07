@@ -92,6 +92,8 @@ export default function ForecastPage() {
   const ChangeIcon = changeTrend === "up" ? TrendingUp : changeTrend === "down" ? TrendingDown : Minus;
   const changeVariant = changeTrend === "up" ? "destructive" : changeTrend === "down" ? "success" : "muted";
 
+  const latestDataDate = historicalData[historicalData.length - 1]?.date;
+
   const selectedPred = predictions[selectedStep];
   const selectedDecomp = selectedPred?.decomposition;
   const maxAbsContribution = selectedDecomp
@@ -122,7 +124,12 @@ export default function ForecastPage() {
                 <Settings2 className="size-5 text-primary" />
                 Parameter Prediksi
               </CardTitle>
-              <CardDescription>Atur asumsi faktor eksternal untuk skenario prediksi</CardDescription>
+              <CardDescription>
+                Atur asumsi faktor eksternal untuk skenario prediksi.
+                {latestDataDate
+                  ? ` Nilai awal diisi dari data terakhir yang tersedia (${monthLong(latestDataDate)}). Silakan ubah untuk melihat skenario lain.`
+                  : ""}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePredict} className="space-y-6">
