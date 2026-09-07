@@ -253,6 +253,12 @@ export default async function Home() {
               <p className="mt-1.5 text-muted-foreground">
                 Perbandingan harga aktual dengan proyeksi model hybrid.
               </p>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                Proyeksi dihitung dengan mengasumsikan faktor eksternal (harga gabah kering giling,
+                curah hujan, produksi padi, dan inflasi pangan) tetap pada nilai terakhir yang
+                tersedia, yaitu data {rangeEnd}. Perubahan kondisi nyata dapat menggeser hasil
+                prediksi.
+              </p>
             </div>
             <Link
               href="/forecast"
