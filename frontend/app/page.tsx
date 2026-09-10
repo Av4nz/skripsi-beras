@@ -351,6 +351,20 @@ export default async function Home() {
               tooltip="Root Mean Square Error — memberi penalti lebih besar pada kesalahan yang tinggi."
             />
           </div>
+          <div className="mt-5 rounded-xl border border-border/70 bg-section-muted p-4 text-sm text-muted-foreground sm:p-5">
+            Angka di atas berlaku pada{" "}
+            <span className="font-medium text-foreground">mode skenario</span>, yaitu ketika kondisi
+            faktor eksternal bulan yang diprediksi sudah diketahui atau diasumsikan. Bila sistem hanya
+            memakai data bulan terakhir yang tersedia, seperti nilai bawaan pada halaman prediksi,
+            MAPE-nya sekitar <span className="font-medium text-foreground">9,91%</span>.{" "}
+            <Link
+              href="/about"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Lihat perbandingannya di Metodologi
+            </Link>
+            .
+          </div>
         </section>
 
         {/* Methodology teaser */}

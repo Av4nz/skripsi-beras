@@ -30,6 +30,22 @@ export const dynamic = "force-dynamic";
 const rupiah = (v: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v);
 
+// MAPE (%) dari rolling backtest yang sama, dibedakan hanya oleh informasi yang
+// tersedia saat prediksi dibuat.
+// Sumber: training/data_train/hybrid_model/trainv2/experiment_final_check.json
+const AKURASI_PER_KONDISI = [
+  {
+    kondisi: "Faktor eksternal bulan target diketahui (mode skenario)",
+    tahun: [3.78, 2.72, 1.3],
+    agregat: 2.92,
+  },
+  {
+    kondisi: "Hanya data sampai bulan sebelumnya",
+    tahun: [15.21, 7.93, 1.97],
+    agregat: 9.91,
+  },
+];
+
 function FlowStep({
   icon,
   iconClass,
@@ -339,6 +355,61 @@ export default async function AboutPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Akurasi menurut kondisi informasi */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BadgeInfo className="size-5 text-primary" />
+            Akurasi pada Kondisi Realistis
+          </CardTitle>
+          <CardDescription>
+            Angka di atas berlaku pada mode skenario, yaitu ketika kondisi faktor eksternal bulan yang
+            diprediksi sudah diketahui atau diasumsikan pengguna.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Pada pemakaian sehari-hari, nilai faktor eksternal bulan depan belum tersedia. Bila sistem
+            hanya memakai data bulan terakhir yang ada, seperti nilai bawaan pada halaman prediksi,
+            galatnya menjadi lebih besar. Perbandingan berikut memakai konfigurasi model yang sama dan
+            hanya berbeda pada informasi yang tersedia saat prediksi dibuat.
+          </p>
+          <div className="mt-4 overflow-x-auto rounded-xl border border-border/70">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40">
+                  <TableHead>Kondisi informasi</TableHead>
+                  <TableHead className="text-right">2024</TableHead>
+                  <TableHead className="text-right">2025</TableHead>
+                  <TableHead className="text-right">2026</TableHead>
+                  <TableHead className="text-right">Agregat</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {AKURASI_PER_KONDISI.map((baris) => (
+                  <TableRow key={baris.kondisi}>
+                    <TableCell className="font-medium">{baris.kondisi}</TableCell>
+                    {baris.tahun.map((nilai, i) => (
+                      <TableCell key={i} className="text-right tabular-nums">
+                        {nilai.toFixed(2)}%
+                      </TableCell>
+                    ))}
+                    <TableCell className="text-right font-medium tabular-nums">
+                      {baris.agregat.toFixed(2)}%
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Selisih terbesar terjadi pada 2024, tahun ketika harga beras melonjak tajam, karena model
+            yang hanya memegang data bulan lalu selalu terlambat menangkap titik balik. Pada periode
+            harga yang relatif stabil seperti 2026, selisihnya kecil.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Tech stack */}
       <section className="mt-12 text-center">
