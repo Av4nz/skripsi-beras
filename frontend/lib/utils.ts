@@ -19,6 +19,22 @@ export function formatMonthYear(dateStr: string): string {
   }).format(d);
 }
 
+/**
+ * Format a number in Indonesian style (dot thousands, comma decimals) with a
+ * fixed number of decimals, e.g. formatAngka(31423.12, 2) -> "31.423,12".
+ */
+export function formatAngka(value: number, decimals = 0): string {
+  return new Intl.NumberFormat("id-ID", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
+/** Format a percentage value in Indonesian style, e.g. formatPersen(2.93) -> "2,93%". */
+export function formatPersen(value: number, decimals = 2): string {
+  return `${formatAngka(value, decimals)}%`;
+}
+
 /** Escape a single CSV field per RFC 4180 (quote if it contains , " or newline). */
 function escapeCsvField(value: unknown): string {
   if (value === null || value === undefined) return "";

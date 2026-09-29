@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { apiService, API_BASE_URL } from "@/services/api";
 import { MetricsSchema, HargaBerasSchema, PredictionResponse } from "@/types/api";
-import { formatMonthYear, cn } from "@/lib/utils";
+import { formatMonthYear, formatAngka, formatPersen, cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Beranda",
@@ -140,9 +140,9 @@ export default async function Home() {
     priceTrend === "up" ? "Tren Harga Naik" : priceTrend === "down" ? "Tren Harga Turun" : "Harga Stabil";
   const priceInsightDesc =
     priceTrend === "up"
-      ? `Tercatat kenaikan Rp ${trendValue} dari bulan sebelumnya. Faktor musiman atau eksternal mungkin sedang menekan pasokan.`
+      ? `Tercatat kenaikan ${formatRupiah(trendValue)} dari bulan sebelumnya. Faktor musiman atau eksternal mungkin sedang menekan pasokan.`
       : priceTrend === "down"
-      ? `Harga dalam tren penurunan (turun Rp ${trendValue}). Pasokan kemungkinan melimpah di pasar.`
+      ? `Harga dalam tren penurunan (turun ${formatRupiah(trendValue)}). Pasokan kemungkinan melimpah di pasar.`
       : `Harga beras relatif stabil tanpa fluktuasi berarti dari bulan lalu.`;
 
   const latestRainfall = latestData?.curah_hujan || 0;
@@ -150,19 +150,19 @@ export default async function Home() {
   const rainfallDiff = latestRainfall - previousRainfall;
 
   let rainfallTitle = "Curah Hujan Stabil";
-  let rainfallDesc = `Curah hujan tercatat ${latestRainfall} mm, stabil dan mendukung operasional pengeringan GKG.`;
+  let rainfallDesc = `Curah hujan tercatat ${formatAngka(latestRainfall, 1)} mm, stabil dan mendukung operasional pengeringan GKG.`;
   if (rainfallDiff > 50) {
     rainfallTitle = "Curah Hujan Meningkat Tajam";
-    rainfallDesc = `Anomali kenaikan tajam (+${rainfallDiff.toFixed(0)} mm) menjadi ${latestRainfall} mm. Berisiko menghambat penjemuran gabah.`;
+    rainfallDesc = `Anomali kenaikan tajam (+${formatAngka(rainfallDiff)} mm) menjadi ${formatAngka(latestRainfall, 1)} mm. Berisiko menghambat penjemuran gabah.`;
   } else if (rainfallDiff > 10) {
     rainfallTitle = "Curah Hujan Meningkat";
-    rainfallDesc = `Tercatat kenaikan curah hujan (+${rainfallDiff.toFixed(0)} mm). Perlu waspada terhadap kualitas GKG petani.`;
+    rainfallDesc = `Tercatat kenaikan curah hujan (+${formatAngka(rainfallDiff)} mm). Perlu waspada terhadap kualitas GKG petani.`;
   } else if (rainfallDiff < -50) {
     rainfallTitle = "Curah Hujan Turun Tajam";
-    rainfallDesc = `Penurunan drastis (${rainfallDiff.toFixed(0)} mm), menandakan musim kemarau yang dapat mengancam volume panen.`;
+    rainfallDesc = `Penurunan drastis (${formatAngka(rainfallDiff)} mm), menandakan musim kemarau yang dapat mengancam volume panen.`;
   } else if (rainfallDiff < -10) {
     rainfallTitle = "Curah Hujan Menurun";
-    rainfallDesc = `Curah hujan berkurang menjadi ${latestRainfall} mm. Kondisi ideal untuk pengeringan gabah hasil panen.`;
+    rainfallDesc = `Curah hujan berkurang menjadi ${formatAngka(latestRainfall, 1)} mm. Kondisi ideal untuk pengeringan gabah hasil panen.`;
   }
 
   const latestInflation = latestData?.inflasi_pangan || 0;
@@ -170,16 +170,16 @@ export default async function Home() {
   const inflationDiff = latestInflation - previousInflation;
 
   let inflationTitle = "Inflasi Pangan Stabil";
-  let inflationDesc = `Inflasi daerah terkendali di ${latestInflation.toFixed(2)}%, meredam volatilitas harga beras.`;
+  let inflationDesc = `Inflasi daerah terkendali di ${formatPersen(latestInflation)}, meredam volatilitas harga beras.`;
   if (inflationDiff > 0.5) {
     inflationTitle = "Inflasi Pangan Melonjak";
-    inflationDesc = `Lonjakan inflasi tajam ke ${latestInflation.toFixed(2)}%. Risiko tinggi daya beli masyarakat menurun.`;
+    inflationDesc = `Lonjakan inflasi tajam ke ${formatPersen(latestInflation)}. Risiko tinggi daya beli masyarakat menurun.`;
   } else if (inflationDiff > 0.1) {
     inflationTitle = "Tren Inflasi Naik";
-    inflationDesc = `Inflasi perlahan naik ke level ${latestInflation.toFixed(2)}%. Memberi sedikit tekanan pada harga bahan pokok.`;
+    inflationDesc = `Inflasi perlahan naik ke level ${formatPersen(latestInflation)}. Memberi sedikit tekanan pada harga bahan pokok.`;
   } else if (inflationDiff < -0.1) {
     inflationTitle = "Tren Inflasi Menurun";
-    inflationDesc = `Penurunan inflasi ke ${latestInflation.toFixed(2)}% memberi sinyal positif bagi stabilitas ekonomi daerah.`;
+    inflationDesc = `Penurunan inflasi ke ${formatPersen(latestInflation)} memberi sinyal positif bagi stabilitas ekonomi daerah.`;
   }
 
   const horizon = predictionsResult.details?.steps?.length ?? 6;
@@ -230,7 +230,7 @@ export default async function Home() {
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2.5">
               <Badge variant={trendVariant}>
-                <TrendIcon /> Rp {trendValue}
+                <TrendIcon /> {formatRupiah(trendValue)}
               </Badge>
               <span className="text-sm text-muted-foreground">dibanding bulan lalu</span>
             </div>
@@ -328,7 +328,7 @@ export default async function Home() {
           <div className="grid gap-5 sm:grid-cols-3">
             <MetricCard
               title="MAPE"
-              value={`${metrics.mape}%`}
+              value={formatPersen(metrics.mape)}
               description="Rata-rata galat persentase"
               icon={<Target />}
               iconClassName="bg-primary/10 text-primary"
@@ -336,7 +336,7 @@ export default async function Home() {
             />
             <MetricCard
               title="MAE"
-              value={`Rp ${metrics.mae}`}
+              value={formatRupiah(metrics.mae)}
               description="Rata-rata selisih absolut"
               icon={<Activity />}
               iconClassName="bg-secondary/15 text-secondary dark:text-secondary-foreground"
@@ -344,7 +344,7 @@ export default async function Home() {
             />
             <MetricCard
               title="RMSE"
-              value={`Rp ${metrics.rmse}`}
+              value={formatRupiah(metrics.rmse)}
               description="Akar rata-rata galat kuadrat"
               icon={<TrendingUp />}
               iconClassName="bg-accent/20 text-accent-foreground dark:text-accent"

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { apiService } from "@/services/api";
 import { MetricsSchema } from "@/types/api";
-import { cn } from "@/lib/utils";
+import { cn, formatPersen } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -343,7 +343,7 @@ export default async function AboutPage() {
                             {isBest && <Badge variant="success">Final</Badge>}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right tabular-nums">{m.mape.toFixed(2)}%</TableCell>
+                        <TableCell className="text-right tabular-nums">{formatPersen(m.mape)}</TableCell>
                         <TableCell className="text-right tabular-nums">{rupiah(m.mae)}</TableCell>
                         <TableCell className="text-right tabular-nums">{rupiah(m.rmse)}</TableCell>
                       </TableRow>
@@ -392,11 +392,11 @@ export default async function AboutPage() {
                     <TableCell className="font-medium">{baris.kondisi}</TableCell>
                     {baris.tahun.map((nilai, i) => (
                       <TableCell key={i} className="text-right tabular-nums">
-                        {nilai.toFixed(2)}%
+                        {formatPersen(nilai)}
                       </TableCell>
                     ))}
                     <TableCell className="text-right font-medium tabular-nums">
-                      {baris.agregat.toFixed(2)}%
+                      {formatPersen(baris.agregat)}
                     </TableCell>
                   </TableRow>
                 ))}
