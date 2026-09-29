@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { HargaBerasSchema } from "@/types/api";
 import { apiService } from "@/services/api";
-import { formatMonthYear, toCsv, downloadTextFile } from "@/lib/utils";
+import { formatMonthYear, formatAngka, toCsv, downloadTextFile } from "@/lib/utils";
 import { HistoricalChart } from "@/components/charts/HistoricalChart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -258,12 +258,14 @@ export default function HistoricalPage() {
                       <TableCell className="text-right tabular-nums text-muted-foreground">
                         {row.harga_gkg != null ? formatCurrency(row.harga_gkg) : "-"}
                       </TableCell>
-                      <TableCell className="text-right tabular-nums">{row.curah_hujan ?? "-"}</TableCell>
                       <TableCell className="text-right tabular-nums">
-                        {row.produksi_padi != null ? row.produksi_padi.toLocaleString("id-ID") : "-"}
+                        {row.curah_hujan != null ? formatAngka(row.curah_hujan, 1) : "-"}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
-                        {row.inflasi_pangan != null ? row.inflasi_pangan.toFixed(2) : "-"}
+                        {row.produksi_padi != null ? formatAngka(row.produksi_padi, 2) : "-"}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {row.inflasi_pangan != null ? formatAngka(row.inflasi_pangan, 2) : "-"}
                       </TableCell>
                     </TableRow>
                   ))
