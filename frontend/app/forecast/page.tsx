@@ -96,6 +96,14 @@ export default function ForecastPage() {
 
   const selectedPred = predictions[selectedStep];
   const selectedDecomp = selectedPred?.decomposition;
+
+  // Selisih akibat batas keluaran backend (perubahan maks 10%/bulan dan minimum GKG x 1,2).
+  // Dihitung dari data yang sudah dikirim API: Final - Prophet - Koreksi XGBoost.
+  const BATAS_TOLERANSI_RUPIAH = 1;
+  const selisihBatas = (p: StepDetail) => p.final_prediction - p.yhat - p.residual;
+  const adaPenyesuaian = predictions.some(
+    (p) => Math.abs(selisihBatas(p)) >= BATAS_TOLERANSI_RUPIAH
+  );
   const maxAbsContribution = selectedDecomp
     ? Math.max(...selectedDecomp.components.map((c) => Math.abs(c.contribution)), 1)
     : 1;
@@ -265,7 +273,9 @@ export default function ForecastPage() {
                 <CardTitle>Rincian Prediksi</CardTitle>
                 <CardDescription className="mt-1">
                   <span className="font-semibold text-foreground">
-                    Prediksi Final = Prophet + Koreksi Residual XGBoost
+                    {adaPenyesuaian
+                      ? "Prediksi Final = Prophet + Koreksi Residual XGBoost + Penyesuaian Batas"
+                      : "Prediksi Final = Prophet + Koreksi Residual XGBoost"}
                   </span>
                   <br />
                   Faktor eksternal (GKG, curah hujan, produksi, inflasi, Lebaran) membentuk prediksi
@@ -280,6 +290,9 @@ export default function ForecastPage() {
                         <TableHead>Bulan</TableHead>
                         <TableHead className="text-right">Prophet</TableHead>
                         <TableHead className="text-right">Koreksi XGBoost</TableHead>
+                        {adaPenyesuaian && (
+                          <TableHead className="text-right">Penyesuaian Batas</TableHead>
+                        )}
                         <TableHead className="text-right font-semibold text-primary">Final</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -302,6 +315,13 @@ export default function ForecastPage() {
                             {p.residual > 0 ? "+" : ""}
                             {formatCurrency(p.residual)}
                           </TableCell>
+                          {adaPenyesuaian && (
+                            <TableCell className="text-right tabular-nums text-muted-foreground">
+                              {Math.abs(selisihBatas(p)) >= BATAS_TOLERANSI_RUPIAH
+                                ? `${selisihBatas(p) > 0 ? "+" : ""}${formatCurrency(selisihBatas(p))}`
+                                : "-"}
+                            </TableCell>
+                          )}
                           <TableCell className="text-right font-bold tabular-nums">
                             {formatCurrency(p.final_prediction)}
                           </TableCell>
@@ -310,6 +330,13 @@ export default function ForecastPage() {
                     </TableBody>
                   </Table>
                 </div>
+                {adaPenyesuaian && (
+                  <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                    Penyesuaian Batas adalah selisih akibat batas keluaran sistem, yaitu perubahan
+                    paling besar 10 persen per bulan dan harga tidak di bawah harga gabah kering giling
+                    dikali 1,2.
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}
