@@ -244,15 +244,7 @@ export default async function Home() {
                 </div>
               )}
               <ForecastChart
-                historicalData={historical.slice(-12).map((h) => ({
-                  date: h.date,
-                  price: h.price,
-                  lebaran: 0,
-                  harga_gkg: null,
-                  curah_hujan: null,
-                  produksi_padi: null,
-                  inflasi_pangan: null,
-                }))}
+                historicalData={historical.slice(-12)}
                 predictions={langkah.map((st) => ({
                   step: st.step,
                   date: st.date,

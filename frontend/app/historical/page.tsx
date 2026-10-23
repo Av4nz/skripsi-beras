@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { HargaBerasSchema } from "@/types/api";
+import { HargaJenisPoint } from "@/types/api";
 import { apiService } from "@/services/api";
-import { formatMonthYear, formatAngka, toCsv, downloadTextFile } from "@/lib/utils";
+import { formatMonthYear, toCsv, downloadTextFile } from "@/lib/utils";
 import { HistoricalChart } from "@/components/charts/HistoricalChart";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,9 +23,9 @@ function SortHead({
   onSort,
 }: {
   label: string;
-  k: keyof HargaBerasSchema;
+  k: keyof HargaJenisPoint;
   align?: "left" | "right";
-  onSort: (key: keyof HargaBerasSchema) => void;
+  onSort: (key: keyof HargaJenisPoint) => void;
 }) {
   return (
     <TableHead className={align === "right" ? "text-right" : ""}>
@@ -42,16 +42,14 @@ function SortHead({
 }
 
 export default function HistoricalPage() {
-  const [data, setData] = useState<HargaBerasSchema[]>([]);
-  const [exog, setExog] = useState<HargaBerasSchema[]>([]);
-  const [siap, setSiap] = useState(false);
+  const [data, setData] = useState<HargaJenisPoint[]>([]);
   const [jenisList, setJenisList] = useState<string[]>([]);
   const [jenis, setJenis] = useState(JENIS_BAWAAN);
   const [loading, setLoading] = useState(true);
   const [loadingJenis, setLoadingJenis] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: keyof HargaBerasSchema; direction: "asc" | "desc" } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: keyof HargaJenisPoint; direction: "asc" | "desc" } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [rangeYears, setRangeYears] = useState<number | "all">("all");
   const itemsPerPage = 12;
@@ -64,46 +62,24 @@ export default function HistoricalPage() {
     { label: "Semua", value: "all" },
   ] as const;
 
-  // Faktor eksternal (GKG, curah hujan, produksi, inflasi) bersifat umum untuk semua jenis beras.
   useEffect(() => {
-    async function loadAwal() {
-      try {
-        const [daftar, faktor] = await Promise.all([apiService.getJenis(), apiService.getHistoricalData()]);
-        setJenisList(daftar);
-        setExog(faktor);
-        setSiap(true);
-      } catch (error) {
-        console.error("Failed to load historical data", error);
-        toast.error("Gagal memuat data historis dari server", { id: "historical-data-error" });
+    apiService
+      .getJenis()
+      .then(setJenisList)
+      .catch(() => {
+        toast.error("Gagal memuat daftar jenis beras dari server", { id: "historical-data-error" });
         setLoading(false);
-      }
-    }
-    loadAwal();
+      });
   }, []);
 
   useEffect(() => {
-    if (!siap) return;
     let batal = false;
     async function loadJenis() {
       setLoadingJenis(true);
       try {
         const harga = await apiService.getHistoris(jenis, 240);
         if (batal) return;
-        const faktorPerTanggal = new Map(exog.map((e) => [e.date, e]));
-        setData(
-          harga.map((h) => {
-            const e = faktorPerTanggal.get(h.date);
-            return {
-              date: h.date,
-              price: h.price,
-              lebaran: e?.lebaran ?? 0,
-              harga_gkg: e?.harga_gkg ?? null,
-              curah_hujan: e?.curah_hujan ?? null,
-              produksi_padi: e?.produksi_padi ?? null,
-              inflasi_pangan: e?.inflasi_pangan ?? null,
-            };
-          })
-        );
+        setData(harga);
         setCurrentPage(1);
       } catch (error) {
         console.error("Failed to load price history", error);
@@ -119,7 +95,7 @@ export default function HistoricalPage() {
     return () => {
       batal = true;
     };
-  }, [jenis, exog, siap]);
+  }, [jenis]);
 
   const rangeFilteredData = React.useMemo(() => {
     if (rangeYears === "all" || data.length === 0) return data;
@@ -150,7 +126,7 @@ export default function HistoricalPage() {
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const requestSort = (key: keyof HargaBerasSchema) => {
+  const requestSort = (key: keyof HargaJenisPoint) => {
     let direction: "asc" | "desc" = "asc";
     if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
@@ -174,11 +150,6 @@ export default function HistoricalPage() {
       { label: "Tanggal", value: (r) => r.date },
       { label: "Bulan/Tahun", value: (r) => formatMonthYear(r.date) },
       { label: `Harga Beras ${jenis} (Rp)`, value: (r) => r.price },
-      { label: "Harga GKG (Rp)", value: (r) => r.harga_gkg ?? "" },
-      { label: "Curah Hujan (mm)", value: (r) => r.curah_hujan ?? "" },
-      { label: "Produksi Padi (Ton)", value: (r) => r.produksi_padi ?? "" },
-      { label: "Inflasi Pangan (%)", value: (r) => r.inflasi_pangan ?? "" },
-      { label: "Lebaran", value: (r) => r.lebaran },
     ]);
     const filename = `data-historis-beras-${jenis.toLowerCase().replace(/ /g, "-")}_${filteredData[0].date}_${filteredData[filteredData.length - 1].date}.csv`;
     downloadTextFile(filename, csv);
@@ -204,9 +175,8 @@ export default function HistoricalPage() {
         </Badge>
         <h1 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl">Data Historis</h1>
         <p className="mt-3 max-w-2xl text-lg text-muted-foreground">
-          Jelajahi data historis harga beras menurut jenis, beserta data lampau faktor yang
-          memengaruhi harga. Faktor tersebut ditampilkan sebagai informasi dan tidak dimasukkan
-          pengguna.
+          Jelajahi data historis harga enam jenis beras di pasar tradisional DI Yogyakarta, dari
+          Januari 2021 hingga bulan terbaru yang tersedia.
         </p>
         <div className="mt-6 space-y-2.5">
           <p id="label-jenis-historis" className="text-sm font-medium text-foreground">Jenis Beras</p>
@@ -242,11 +212,9 @@ export default function HistoricalPage() {
       <Card className="mt-10">
         <CardHeader className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <CardTitle>Tren Harga Beras &amp; Gabah</CardTitle>
+            <CardTitle>Tren Harga Beras {jenis}</CardTitle>
             <CardDescription className="mt-1">
-              Perbandingan harga Beras {jenis} dengan harga Gabah Kering Giling (Rp/kg). Harga gabah
-              dan faktor lain (curah hujan, produksi, inflasi) sama untuk semua jenis beras dan tersedia
-              pada tabel di bawah.
+              Rata-rata harga bulanan Beras {jenis} (Rp/kg) pada rentang waktu yang dipilih.
             </CardDescription>
           </div>
           <div
@@ -319,10 +287,6 @@ export default function HistoricalPage() {
                 <TableRow className="bg-muted/40">
                   <SortHead label="Bulan/Tahun" k="date" align="left" onSort={requestSort} />
                   <SortHead label={`Harga ${jenis}`} k="price" onSort={requestSort} />
-                  <SortHead label="Harga GKG" k="harga_gkg" onSort={requestSort} />
-                  <SortHead label="Curah Hujan (mm)" k="curah_hujan" onSort={requestSort} />
-                  <SortHead label="Produksi (Ton)" k="produksi_padi" onSort={requestSort} />
-                  <SortHead label="Inflasi (%)" k="inflasi_pangan" onSort={requestSort} />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -331,23 +295,11 @@ export default function HistoricalPage() {
                     <TableRow key={row.date + i}>
                       <TableCell className="font-medium">{formatDate(row.date)}</TableCell>
                       <TableCell className="text-right font-semibold tabular-nums">{formatCurrency(row.price)}</TableCell>
-                      <TableCell className="text-right tabular-nums text-muted-foreground">
-                        {row.harga_gkg != null ? formatCurrency(row.harga_gkg) : "-"}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {row.curah_hujan != null ? formatAngka(row.curah_hujan, 1) : "-"}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {row.produksi_padi != null ? formatAngka(row.produksi_padi, 2) : "-"}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {row.inflasi_pangan != null ? formatAngka(row.inflasi_pangan, 2) : "-"}
-                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={2} className="h-24 text-center text-muted-foreground">
                       Data tidak ditemukan.
                     </TableCell>
                   </TableRow>
@@ -383,9 +335,9 @@ export default function HistoricalPage() {
 
           <p className="mt-5 flex items-center gap-1.5 border-t border-border/60 pt-4 text-xs text-muted-foreground">
             <Sparkles className="size-3.5 text-secondary" />
-            Sumber: PIHPS Nasional (harga beras menurut jenis, rata-rata harian per bulan), Badan Pangan
-            Nasional (Bapanas), Badan Pusat Statistik, dan Open-Meteo. Data faktor eksternal terbaru
-            mengikuti ketersediaan sumbernya dan dapat tertinggal dua sampai tiga bulan.
+            Sumber: PIHPS Nasional (Bank Indonesia), harga beras menurut jenis di pasar tradisional
+            DI Yogyakarta. Nilai bulanan adalah rata-rata harga harian dan bertambah otomatis setiap
+            bulan penuh.
           </p>
         </CardContent>
       </Card>

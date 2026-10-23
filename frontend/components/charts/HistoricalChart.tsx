@@ -4,14 +4,13 @@ import {
   Area,
   CartesianGrid,
   ComposedChart,
-  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
   Legend,
 } from "recharts";
-import { HargaBerasSchema } from "@/types/api";
+import { HargaJenisPoint } from "@/types/api";
 import { cn } from "@/lib/utils";
 import {
   axisTick,
@@ -22,7 +21,7 @@ import {
 } from "@/components/charts/chart-theme";
 
 interface HistoricalChartProps {
-  data: HargaBerasSchema[];
+  data: HargaJenisPoint[];
   className?: string;
 }
 
@@ -78,15 +77,6 @@ export function HistoricalChart({ data, className }: HistoricalChartProps) {
             fill="url(#histPriceFill)"
             dot={false}
             activeDot={{ r: 5, strokeWidth: 0 }}
-          />
-          <Line
-            type="monotone"
-            dataKey="harga_gkg"
-            name="Harga Gabah (GKG)"
-            stroke="var(--accent)"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4, strokeWidth: 0 }}
           />
         </ComposedChart>
       </ResponsiveContainer>

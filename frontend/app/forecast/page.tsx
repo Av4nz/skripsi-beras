@@ -265,15 +265,7 @@ export default function ForecastPage() {
               ) : hasil ? (
                 <div className={cn(loading && "opacity-60 transition-opacity")} aria-busy={loading}>
                   <ForecastChart
-                    historicalData={historis.map((h) => ({
-                      date: h.date,
-                      price: h.price,
-                      lebaran: 0,
-                      harga_gkg: null,
-                      curah_hujan: null,
-                      produksi_padi: null,
-                      inflasi_pangan: null,
-                    }))}
+                    historicalData={historis}
                     predictions={steps.map((s) => ({
                       step: s.step,
                       date: s.date,

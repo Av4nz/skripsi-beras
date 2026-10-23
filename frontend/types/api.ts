@@ -25,16 +25,6 @@ export interface StepDetail {
   decomposition?: PredictionDecomposition | null;
 }
 
-export interface HargaBerasSchema {
-  date: string;
-  price: number;
-  lebaran: number;
-  harga_gkg: number | null;
-  curah_hujan: number | null;
-  produksi_padi: number | null;
-  inflasi_pangan: number | null;
-}
-
 // ---------------------------------------------------------------------------
 // API "Beras": per jenis beras, tanpa masukan faktor eksternal
 // ---------------------------------------------------------------------------
