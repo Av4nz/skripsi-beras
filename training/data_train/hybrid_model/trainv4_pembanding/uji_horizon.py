@@ -56,6 +56,9 @@ else:
 s = s.asfreq("MS").interpolate(limit_direction="both")  # bulan kosong terisi interpolasi linear (dicatat)
 s = s.loc[START:]
 leb = leb.reindex(s.index).fillna(0)
+TANPA_LEBARAN = os.environ.get("TANPA_LEBARAN") == "1"   # ablasi: semua penanda Lebaran dinolkan (Prophet dan XGBoost)
+if TANPA_LEBARAN:
+    leb = leb * 0.0
 
 PC = CFG["prophet_tuned"]; XC = CFG["hybrid_xgboost_tuned"]
 
@@ -139,6 +142,8 @@ for h in range(1, H_MAX + 1):
     res.append(row)
 r = pd.DataFrame(res)
 tag = JENIS.replace(" ", "_") + ("_bulanan" if (SEMUA_BULANAN and JENIS == "Medium II") else "")
+if TANPA_LEBARAN:
+    tag += "_tanpaLebaran"
 r.to_csv(os.path.join(HERE, f"uji_horizon_{tag}.csv"), index=False)
 df.to_csv(os.path.join(HERE, f"uji_horizon_{tag}_prediksi.csv"), index=False)
 print(f"Jenis: {JENIS} | origin {origins[0].date()} .. {origins[-1].date()} | bulan interpolasi: ", int(pd.Series(s).isna().sum()))

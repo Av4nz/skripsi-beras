@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.database import engine, Base
-from app.services.model_loader import load_models
 from app.services.rice_predictor import load_rice_models
 from app.api.routes import router as api_router
 from app.api.rice_routes import router as rice_router
@@ -13,8 +12,7 @@ from app.api.rice_routes import router as rice_router
 async def lifespan(app: FastAPI):
     # Setup database tables
     Base.metadata.create_all(bind=engine)
-    # Load ML models
-    load_models()
+    # Load ML models (per jenis beras)
     load_rice_models()
     yield
     # Cleanup if needed

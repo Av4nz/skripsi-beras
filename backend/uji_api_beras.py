@@ -87,7 +87,8 @@ cek("metrik 24 baris (6 horizon x 4 model)", r.status_code == 200 and len(m["met
 cek("metrik h=1 Medium II: naive 0,834 dan hybrid 2,532",
     baris[(1, "naive")]["mape"] == 0.834 and baris[(1, "hybrid")]["mape"] == 2.532,
     (baris[(1, "naive")]["mape"], baris[(1, "hybrid")]["mape"]))
-cek("endpoint lama /metrics masih ada (tabel lama kosong di SQLite)", c.get("/metrics").status_code == 200)
+cek("endpoint lama /metrics dan /predict sudah dihapus (404/405)", c.get("/metrics").status_code == 404 and c.get("/predict").status_code in (404, 405))
+cek("/data/historical (faktor sebagai informasi) tetap ada", c.get("/data/historical").status_code == 200)
 
 print(f"\n{sum(hasil)}/{len(hasil)} lulus")
 server.should_exit = True
