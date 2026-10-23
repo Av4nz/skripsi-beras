@@ -37,40 +37,6 @@
       "bulan_terakhir": "2026-05-01"
     }
   },
-  "lebaran": [
-    [
-      2021,
-      5
-    ],
-    [
-      2022,
-      5
-    ],
-    [
-      2023,
-      4
-    ],
-    [
-      2024,
-      4
-    ],
-    [
-      2025,
-      3
-    ],
-    [
-      2026,
-      3
-    ],
-    [
-      2027,
-      3
-    ],
-    [
-      2028,
-      2
-    ]
-  ],
   "fitur_xgb": [
     "resid_lag1",
     "resid_lag2",
@@ -80,8 +46,7 @@
     "rolling_mean_3",
     "diff_t",
     "month_sin",
-    "month_cos",
-    "lebaran_next"
+    "month_cos"
   ],
   "prophet": {
     "changepoint_prior_scale": 0.1,

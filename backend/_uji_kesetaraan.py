@@ -28,7 +28,7 @@ selisih_maks = 0.0
 for jenis in rp.list_rice_types():
     hist = hist_all.loc[:"2025-12-01", jenis]
     res = rp.predict_rice(jenis, hist, 5)
-    tag = jenis.replace(" ", "_") + ("_bulanan" if jenis == "Medium II" else "")
+    tag = jenis.replace(" ", "_") + ("_bulanan" if jenis == "Medium II" else "") + "_tanpaLebaran"
     ref = pd.read_csv(os.path.join(H, f"uji_horizon_{tag}_prediksi.csv"), parse_dates=["origin"])
     ref = ref[ref.origin == "2025-12-01"].iloc[0]
     for r in res:

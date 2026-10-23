@@ -170,7 +170,7 @@ export default async function AboutPage() {
               icon={<Activity />}
               iconClass="bg-primary/10 text-primary"
               title="Prediksi Prophet"
-              desc="Menangkap tren, pola musiman tahunan, dan penanda Idulfitri"
+              desc="Menangkap tren dan pola musiman tahunan dari riwayat harga"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep

@@ -67,7 +67,7 @@ cek("horizon 6: 6 langkah, Juni sampai November 2026",
 cek("seri memuat titik aktual dan forecast", {x["type"] for x in d["series"]} == {"actual", "forecast"})
 cek("naive konstan sama dengan harga terakhir", all(abs(s["naive"] - d["origin_price"]) < 1e-9 for s in d["steps"]), d["origin_price"])
 comp = [x["name"] for x in d["steps"][0]["decomposition"]["components"]] if d["steps"][0]["decomposition"] else None
-cek("dekomposisi: hanya musiman dan Lebaran (tanpa faktor eksternal)", comp is not None and set(comp) == {"yearly", "lebaran"}, comp)
+cek("dekomposisi: hanya musiman tahunan (tanpa faktor eksternal dan Lebaran)", comp is not None and set(comp) == {"yearly"}, comp)
 cek("hybrid = prophet + residual (selisih < 0,01)", all(abs(s["hybrid"] - s["prophet"] - s["residual"]) < 0.01 for s in d["steps"]))
 cek("horizon 0 ditolak 422", c.get("/beras/prediksi", params={"jenis": "Medium II", "horizon": 0}).status_code == 422)
 cek("horizon 7 ditolak 422", c.get("/beras/prediksi", params={"jenis": "Medium II", "horizon": 7}).status_code == 422)
@@ -84,8 +84,8 @@ cek("historis jenis tidak dikenal 404", c.get("/beras/historis", params={"jenis"
 r = c.get("/beras/metrik", params={"jenis": "Medium II"}); m = r.json()
 baris = {(x["horizon"], x["model"]): x for x in m["metrik"]}
 cek("metrik 24 baris (6 horizon x 4 model)", r.status_code == 200 and len(m["metrik"]) == 24)
-cek("metrik h=1 Medium II: naive 0,834 dan hybrid 2,532",
-    baris[(1, "naive")]["mape"] == 0.834 and baris[(1, "hybrid")]["mape"] == 2.532,
+cek("metrik h=1 Medium II: naive 0,834 dan hybrid 2,498",
+    baris[(1, "naive")]["mape"] == 0.834 and baris[(1, "hybrid")]["mape"] == 2.498,
     (baris[(1, "naive")]["mape"], baris[(1, "hybrid")]["mape"]))
 cek("endpoint lama /metrics dan /predict sudah dihapus (404/405)", c.get("/metrics").status_code == 404 and c.get("/predict").status_code in (404, 405))
 cek("/data/historical (faktor sebagai informasi) tetap ada", c.get("/data/historical").status_code == 200)

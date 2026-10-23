@@ -1,5 +1,5 @@
 {
- "protokol": "walk-forward, expanding window, refit tiap bulan; uji target Januari 2024 sampai Mei 2026; tanpa faktor eksternal; hyperparameter dibekukan dari trainv3",
+ "protokol": "walk-forward, expanding window, refit tiap bulan; uji target Januari 2024 sampai Mei 2026; tanpa faktor eksternal dan tanpa penanda Lebaran; hyperparameter dibekukan dari trainv3",
  "metrik": {
   "Bawah I": [
    {
@@ -22,17 +22,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 2.296,
-    "mae": 305.1,
-    "rmse": 377.0
+    "mape": 2.304,
+    "mae": 306.2,
+    "rmse": 375.8
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 2.183,
-    "mae": 290.4,
-    "rmse": 363.8
+    "mape": 2.187,
+    "mae": 290.8,
+    "rmse": 362.5
    },
    {
     "horizon": 2,
@@ -54,17 +54,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 3.51,
-    "mae": 466.7,
-    "rmse": 539.2
+    "mape": 3.518,
+    "mae": 467.7,
+    "rmse": 537.3
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 3.476,
-    "mae": 462.2,
-    "rmse": 536.5
+    "mape": 3.491,
+    "mae": 464.2,
+    "rmse": 536.1
    },
    {
     "horizon": 3,
@@ -86,17 +86,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 4.399,
-    "mae": 583.0,
-    "rmse": 662.0
+    "mape": 4.394,
+    "mae": 582.2,
+    "rmse": 657.7
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 4.375,
-    "mae": 579.7,
-    "rmse": 658.4
+    "mape": 4.379,
+    "mae": 580.2,
+    "rmse": 655.5
    },
    {
     "horizon": 4,
@@ -118,17 +118,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 5.31,
-    "mae": 701.5,
-    "rmse": 774.2
+    "mape": 5.275,
+    "mae": 696.9,
+    "rmse": 769.7
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 5.277,
-    "mae": 697.3,
-    "rmse": 771.3
+    "mape": 5.266,
+    "mae": 695.9,
+    "rmse": 768.3
    },
    {
     "horizon": 5,
@@ -150,17 +150,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 5.847,
-    "mae": 770.1,
-    "rmse": 879.6
+    "mape": 5.798,
+    "mae": 763.6,
+    "rmse": 874.5
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 5.82,
-    "mae": 766.6,
-    "rmse": 877.1
+    "mape": 5.78,
+    "mae": 761.3,
+    "rmse": 874.0
    },
    {
     "horizon": 6,
@@ -182,17 +182,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 6.433,
-    "mae": 845.3,
-    "rmse": 985.8
+    "mape": 6.389,
+    "mae": 839.6,
+    "rmse": 977.5
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 6.412,
-    "mae": 842.6,
-    "rmse": 984.2
+    "mape": 6.381,
+    "mae": 838.6,
+    "rmse": 977.9
    }
   ],
   "Bawah II": [
@@ -216,17 +216,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 2.322,
-    "mae": 286.7,
-    "rmse": 347.7
+    "mape": 2.305,
+    "mae": 284.6,
+    "rmse": 345.8
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 2.247,
-    "mae": 277.6,
-    "rmse": 340.8
+    "mape": 2.223,
+    "mae": 274.6,
+    "rmse": 337.7
    },
    {
     "horizon": 2,
@@ -248,17 +248,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 3.373,
-    "mae": 415.8,
-    "rmse": 499.4
+    "mape": 3.345,
+    "mae": 412.3,
+    "rmse": 495.9
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 3.392,
-    "mae": 418.1,
-    "rmse": 504.2
+    "mape": 3.365,
+    "mae": 414.6,
+    "rmse": 500.9
    },
    {
     "horizon": 3,
@@ -280,17 +280,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 4.39,
-    "mae": 539.5,
-    "rmse": 633.2
+    "mape": 4.372,
+    "mae": 537.2,
+    "rmse": 631.2
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 4.398,
-    "mae": 540.6,
-    "rmse": 635.6
+    "mape": 4.385,
+    "mae": 538.8,
+    "rmse": 633.5
    },
    {
     "horizon": 4,
@@ -312,17 +312,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 5.35,
-    "mae": 655.1,
-    "rmse": 768.3
+    "mape": 5.328,
+    "mae": 652.3,
+    "rmse": 766.6
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 5.365,
-    "mae": 657.0,
-    "rmse": 770.2
+    "mape": 5.35,
+    "mae": 655.0,
+    "rmse": 768.4
    },
    {
     "horizon": 5,
@@ -344,17 +344,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 6.37,
-    "mae": 778.6,
-    "rmse": 909.8
+    "mape": 6.364,
+    "mae": 778.0,
+    "rmse": 907.1
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 6.385,
+    "mape": 6.384,
     "mae": 780.5,
-    "rmse": 911.4
+    "rmse": 908.6
    },
    {
     "horizon": 6,
@@ -376,17 +376,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 7.361,
-    "mae": 899.3,
-    "rmse": 1052.0
+    "mape": 7.379,
+    "mae": 901.4,
+    "rmse": 1053.5
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 7.38,
-    "mae": 901.5,
-    "rmse": 1053.5
+    "mape": 7.402,
+    "mae": 904.2,
+    "rmse": 1054.5
    }
   ],
   "Medium I": [
@@ -410,17 +410,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 2.556,
-    "mae": 382.9,
-    "rmse": 462.4
+    "mape": 2.523,
+    "mae": 378.0,
+    "rmse": 458.1
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 2.423,
-    "mae": 363.2,
-    "rmse": 446.7
+    "mape": 2.382,
+    "mae": 357.2,
+    "rmse": 440.8
    },
    {
     "horizon": 2,
@@ -442,17 +442,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 3.841,
-    "mae": 576.0,
-    "rmse": 653.7
+    "mape": 3.792,
+    "mae": 568.8,
+    "rmse": 646.9
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 3.838,
-    "mae": 575.5,
-    "rmse": 655.2
+    "mape": 3.793,
+    "mae": 569.0,
+    "rmse": 648.8
    },
    {
     "horizon": 3,
@@ -474,17 +474,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 4.705,
-    "mae": 703.4,
-    "rmse": 783.6
+    "mape": 4.635,
+    "mae": 692.9,
+    "rmse": 774.7
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 4.706,
-    "mae": 703.7,
-    "rmse": 782.6
+    "mape": 4.641,
+    "mae": 694.0,
+    "rmse": 775.6
    },
    {
     "horizon": 4,
@@ -506,17 +506,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 5.482,
-    "mae": 817.0,
-    "rmse": 893.9
+    "mape": 5.422,
+    "mae": 808.0,
+    "rmse": 884.5
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 5.476,
-    "mae": 816.2,
-    "rmse": 891.9
+    "mape": 5.429,
+    "mae": 809.1,
+    "rmse": 884.5
    },
    {
     "horizon": 5,
@@ -538,17 +538,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 5.898,
-    "mae": 876.3,
-    "rmse": 996.4
+    "mape": 5.837,
+    "mae": 867.4,
+    "rmse": 985.6
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 5.878,
-    "mae": 873.4,
-    "rmse": 995.0
+    "mape": 5.836,
+    "mae": 867.1,
+    "rmse": 986.1
    },
    {
     "horizon": 6,
@@ -570,17 +570,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 6.324,
-    "mae": 937.7,
-    "rmse": 1103.3
+    "mape": 6.279,
+    "mae": 931.1,
+    "rmse": 1092.0
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 6.306,
-    "mae": 935.1,
-    "rmse": 1102.5
+    "mape": 6.279,
+    "mae": 931.1,
+    "rmse": 1093.1
    }
   ],
   "Medium II": [
@@ -604,17 +604,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 2.665,
-    "mae": 380.2,
-    "rmse": 466.8
+    "mape": 2.625,
+    "mae": 374.6,
+    "rmse": 460.4
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 2.532,
-    "mae": 361.4,
-    "rmse": 450.7
+    "mape": 2.498,
+    "mae": 356.6,
+    "rmse": 444.1
    },
    {
     "horizon": 2,
@@ -636,17 +636,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 3.936,
-    "mae": 561.5,
-    "rmse": 650.4
+    "mape": 3.875,
+    "mae": 553.0,
+    "rmse": 644.3
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 3.918,
-    "mae": 559.1,
-    "rmse": 650.3
+    "mape": 3.859,
+    "mae": 550.7,
+    "rmse": 644.0
    },
    {
     "horizon": 3,
@@ -668,17 +668,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 4.883,
-    "mae": 694.2,
-    "rmse": 781.2
+    "mape": 4.815,
+    "mae": 684.7,
+    "rmse": 771.4
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 4.862,
-    "mae": 691.4,
-    "rmse": 778.7
+    "mape": 4.813,
+    "mae": 684.4,
+    "rmse": 769.6
    },
    {
     "horizon": 4,
@@ -700,17 +700,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 5.705,
-    "mae": 808.1,
-    "rmse": 889.4
+    "mape": 5.67,
+    "mae": 803.2,
+    "rmse": 880.6
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 5.668,
-    "mae": 802.9,
-    "rmse": 884.4
+    "mape": 5.655,
+    "mae": 801.1,
+    "rmse": 878.0
    },
    {
     "horizon": 5,
@@ -732,17 +732,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 6.199,
-    "mae": 874.9,
-    "rmse": 988.0
+    "mape": 6.162,
+    "mae": 869.8,
+    "rmse": 979.4
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 6.168,
-    "mae": 870.5,
-    "rmse": 983.5
+    "mape": 6.153,
+    "mae": 868.5,
+    "rmse": 977.1
    },
    {
     "horizon": 6,
@@ -764,17 +764,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 6.839,
-    "mae": 963.2,
-    "rmse": 1098.6
+    "mape": 6.795,
+    "mae": 957.1,
+    "rmse": 1087.6
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 6.791,
-    "mae": 956.5,
-    "rmse": 1094.5
+    "mape": 6.777,
+    "mae": 954.6,
+    "rmse": 1085.7
    }
   ],
   "Super I": [
@@ -798,17 +798,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 1.614,
-    "mae": 261.2,
-    "rmse": 315.1
+    "mape": 1.602,
+    "mae": 259.3,
+    "rmse": 314.7
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 1.54,
-    "mae": 249.3,
-    "rmse": 302.2
+    "mape": 1.53,
+    "mae": 247.7,
+    "rmse": 301.6
    },
    {
     "horizon": 2,
@@ -830,17 +830,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 2.326,
-    "mae": 377.1,
-    "rmse": 442.9
+    "mape": 2.338,
+    "mae": 379.2,
+    "rmse": 444.3
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 2.372,
-    "mae": 384.5,
-    "rmse": 450.3
+    "mape": 2.396,
+    "mae": 388.4,
+    "rmse": 452.5
    },
    {
     "horizon": 3,
@@ -862,17 +862,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 2.861,
-    "mae": 462.9,
-    "rmse": 551.7
+    "mape": 2.872,
+    "mae": 464.9,
+    "rmse": 551.9
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 2.921,
-    "mae": 472.7,
-    "rmse": 561.8
+    "mape": 2.932,
+    "mae": 474.5,
+    "rmse": 562.3
    },
    {
     "horizon": 4,
@@ -894,17 +894,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 3.406,
-    "mae": 550.0,
-    "rmse": 649.0
+    "mape": 3.388,
+    "mae": 547.1,
+    "rmse": 647.3
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 3.444,
-    "mae": 556.1,
-    "rmse": 659.2
+    "mape": 3.431,
+    "mae": 554.1,
+    "rmse": 658.2
    },
    {
     "horizon": 5,
@@ -926,17 +926,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 3.82,
-    "mae": 615.7,
-    "rmse": 746.6
+    "mape": 3.797,
+    "mae": 612.0,
+    "rmse": 743.0
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 3.861,
-    "mae": 622.4,
-    "rmse": 757.7
+    "mape": 3.84,
+    "mae": 619.1,
+    "rmse": 754.9
    },
    {
     "horizon": 6,
@@ -958,17 +958,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 4.183,
-    "mae": 673.6,
-    "rmse": 842.5
+    "mape": 4.15,
+    "mae": 668.4,
+    "rmse": 837.0
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 4.233,
-    "mae": 681.7,
-    "rmse": 854.1
+    "mape": 4.2,
+    "mae": 676.4,
+    "rmse": 849.1
    }
   ],
   "Super II": [
@@ -992,17 +992,17 @@
     "horizon": 1,
     "model": "prophet",
     "n_uji": 29,
-    "mape": 2.336,
-    "mae": 358.8,
-    "rmse": 462.2
+    "mape": 2.31,
+    "mae": 354.8,
+    "rmse": 455.9
    },
    {
     "horizon": 1,
     "model": "hybrid",
     "n_uji": 29,
-    "mape": 2.226,
-    "mae": 342.0,
-    "rmse": 449.2
+    "mape": 2.183,
+    "mae": 335.5,
+    "rmse": 440.3
    },
    {
     "horizon": 2,
@@ -1024,17 +1024,17 @@
     "horizon": 2,
     "model": "prophet",
     "n_uji": 28,
-    "mape": 3.423,
-    "mae": 526.5,
-    "rmse": 650.7
+    "mape": 3.399,
+    "mae": 522.8,
+    "rmse": 642.1
    },
    {
     "horizon": 2,
     "model": "hybrid",
     "n_uji": 28,
-    "mape": 3.474,
-    "mae": 534.2,
-    "rmse": 661.0
+    "mape": 3.455,
+    "mae": 531.3,
+    "rmse": 652.3
    },
    {
     "horizon": 3,
@@ -1056,17 +1056,17 @@
     "horizon": 3,
     "model": "prophet",
     "n_uji": 27,
-    "mape": 4.286,
-    "mae": 657.1,
-    "rmse": 787.7
+    "mape": 4.217,
+    "mae": 646.4,
+    "rmse": 775.3
    },
    {
     "horizon": 3,
     "model": "hybrid",
     "n_uji": 27,
-    "mape": 4.344,
-    "mae": 665.9,
-    "rmse": 796.5
+    "mape": 4.291,
+    "mae": 657.6,
+    "rmse": 786.2
    },
    {
     "horizon": 4,
@@ -1088,17 +1088,17 @@
     "horizon": 4,
     "model": "prophet",
     "n_uji": 26,
-    "mape": 4.996,
-    "mae": 762.6,
-    "rmse": 902.6
+    "mape": 4.931,
+    "mae": 752.7,
+    "rmse": 890.4
    },
    {
     "horizon": 4,
     "model": "hybrid",
     "n_uji": 26,
-    "mape": 5.05,
-    "mae": 770.8,
-    "rmse": 910.6
+    "mape": 4.975,
+    "mae": 759.4,
+    "rmse": 898.1
    },
    {
     "horizon": 5,
@@ -1120,17 +1120,17 @@
     "horizon": 5,
     "model": "prophet",
     "n_uji": 25,
-    "mape": 5.502,
-    "mae": 836.4,
-    "rmse": 1019.4
+    "mape": 5.443,
+    "mae": 827.5,
+    "rmse": 1008.0
    },
    {
     "horizon": 5,
     "model": "hybrid",
     "n_uji": 25,
-    "mape": 5.563,
-    "mae": 845.6,
-    "rmse": 1026.5
+    "mape": 5.501,
+    "mae": 836.3,
+    "rmse": 1015.8
    },
    {
     "horizon": 6,
@@ -1152,17 +1152,17 @@
     "horizon": 6,
     "model": "prophet",
     "n_uji": 24,
-    "mape": 5.993,
-    "mae": 909.7,
-    "rmse": 1157.5
+    "mape": 5.934,
+    "mae": 900.7,
+    "rmse": 1146.5
    },
    {
     "horizon": 6,
     "model": "hybrid",
     "n_uji": 24,
-    "mape": 6.031,
-    "mae": 915.3,
-    "rmse": 1165.6
+    "mape": 5.984,
+    "mae": 908.2,
+    "rmse": 1154.9
    }
   ]
  }

@@ -12,10 +12,10 @@ H = os.path.join(ROOT, "training", "data_train", "hybrid_model", "trainv4_pemban
 JENIS = ["Bawah I", "Bawah II", "Medium I", "Medium II", "Super I", "Super II"]
 MODEL = {"Naive": "naive", "ARIMA(1,1,0)": "arima", "Prophet": "prophet", "Hybrid recursive": "hybrid"}
 out = {"protokol": "walk-forward, expanding window, refit tiap bulan; uji target Januari 2024 sampai Mei 2026; "
-                   "tanpa faktor eksternal; hyperparameter dibekukan dari trainv3",
+                   "tanpa faktor eksternal dan tanpa penanda Lebaran; hyperparameter dibekukan dari trainv3",
        "metrik": {}}
 for j in JENIS:
-    tag = j.replace(" ", "_") + ("_bulanan" if j == "Medium II" else "")
+    tag = j.replace(" ", "_") + ("_bulanan" if j == "Medium II" else "") + "_tanpaLebaran"
     df = pd.read_csv(os.path.join(H, f"uji_horizon_{tag}.csv"))
     rows = []
     for _, r in df.iterrows():

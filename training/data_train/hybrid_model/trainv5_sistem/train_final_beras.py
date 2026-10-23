@@ -3,15 +3,15 @@
  LATIH MODEL FINAL SISTEM "BERAS" -- hybrid per jenis (skema realistis)
 ============================================================================
 Satu model hybrid per jenis beras PIHPS DIY (6 jenis):
-    harga(T+1) = Prophet(tren + musiman tahunan + Lebaran)  +  XGBoost(residual)
-Tanpa faktor eksternal (konfigurasi terbaik trainv3 memang tanpa faktor eksternal).
+    harga(T+1) = Prophet(tren + musiman tahunan)  +  XGBoost(residual)
+Tanpa faktor eksternal dan tanpa penanda Lebaran (ablasi 23 Okt 2026: Lebaran tidak meningkatkan akurasi).
 Hyperparameter dibekukan dari trainv3_realistic/final_config.json (dituning pada
 Medium II, tidak dituning ulang per jenis, supaya tidak ada kebocoran).
 
 Artefak (backend/ml_models/beras/):
     <slug>/prophet.pkl, <slug>/xgb.pkl     satu pasang per jenis
     config.json                             fitur, koefisien AR(1) pada selisih (ARIMA(1,1,0)),
-                                            kalender Lebaran, rentang data
+                                            rentang data
 
 Pembanding sistem (tidak butuh pustaka tambahan di backend):
     naive         : harga bulan terakhir dipertahankan
@@ -45,27 +45,19 @@ CUTOFF = os.environ.get("CUTOFF")
 OUT = (os.path.join(HERE, "_uji_kesetaraan") if CUTOFF else os.path.join(ROOT, "backend", "ml_models", "beras"))
 
 JENIS = ["Bawah I", "Bawah II", "Medium I", "Medium II", "Super I", "Super II"]
-# Bulan Idul Fitri (tahun, bulan). 2021-2026 dari dataset skripsi. 2027 dan 2028 adalah perkiraan kalender
-# astronomis (Idul Fitri 1448 H sekitar 10 Maret 2027, 1449 H sekitar 28 Februari 2028) dan perlu dicek ulang.
-LEBARAN = [(2021, 5), (2022, 5), (2023, 4), (2024, 4), (2025, 3), (2026, 3), (2027, 3), (2028, 2)]
 KEYS = ["resid_lag1", "resid_lag2", "price_t", "price_t1", "price_t2", "rolling_mean_3", "diff_t",
-        "month_sin", "month_cos", "lebaran_next"]
+        "month_sin", "month_cos"]
 
 
 def slug(j):
     return j.lower().replace(" ", "-")
 
 
-def leb(d):
-    return 1.0 if (d.year, d.month) in LEBARAN else 0.0
-
-
 def feats_row(prices, resid, date):
     p = list(prices)
     return {"resid_lag1": resid[-1], "resid_lag2": resid[-2], "price_t": p[-1], "price_t1": p[-2], "price_t2": p[-3],
             "rolling_mean_3": float(np.mean(p[-3:])), "diff_t": p[-1] - p[-2],
-            "month_sin": float(np.sin(2 * np.pi * date.month / 12)), "month_cos": float(np.cos(2 * np.pi * date.month / 12)),
-            "lebaran_next": leb(date)}
+            "month_sin": float(np.sin(2 * np.pi * date.month / 12)), "month_cos": float(np.cos(2 * np.pi * date.month / 12))}
 
 
 def phi_cls(series):
@@ -85,7 +77,7 @@ if os.path.exists(OUT):
     shutil.rmtree(OUT)
 os.makedirs(OUT)
 
-info = {"jenis": {}, "lebaran": [list(x) for x in LEBARAN], "fitur_xgb": KEYS,
+info = {"jenis": {}, "fitur_xgb": KEYS,
         "prophet": PC, "xgb": XP, "metode_phi": "kuadrat terkecil bersyarat pada selisih harga",
         "data_awal": str(bul.index.min().date()), "data_akhir": str(bul.index.max().date()),
         "jumlah_bulan": int(len(bul)), "cutoff": CUTOFF}
@@ -94,10 +86,9 @@ for j in JENIS:
     m = Prophet(yearly_seasonality=int(PC["yearly_order"]), weekly_seasonality=False, daily_seasonality=False,
                 changepoint_prior_scale=PC["changepoint_prior_scale"], seasonality_prior_scale=PC["seasonality_prior_scale"],
                 seasonality_mode=PC["seasonality_mode"])
-    m.add_regressor("lebaran")
-    train = pd.DataFrame({"ds": s.index, "y": s.values, "lebaran": [leb(d) for d in s.index]})
+    train = pd.DataFrame({"ds": s.index, "y": s.values})
     m.fit(train)
-    in_s = m.predict(train[["ds", "lebaran"]])["yhat"].values
+    in_s = m.predict(train[["ds"]])["yhat"].values
     resid = list(s.values - in_s)
     rows, ys = [], []
     for i in range(3, len(s)):

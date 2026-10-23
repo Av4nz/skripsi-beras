@@ -1,7 +1,7 @@
 """
 Prediksi harga beras per jenis (hybrid Prophet + XGBoost, skema realistis).
 
-Tanpa faktor eksternal dan tanpa masukan faktor dari pengguna. Masukan hanya:
+Tanpa faktor eksternal, tanpa penanda Lebaran, dan tanpa masukan faktor dari pengguna. Masukan hanya:
   - jenis beras
   - horizon (bulan)
 Titik awal prediksi adalah bulan terakhir yang tersedia pada riwayat harga jenis itu
@@ -53,10 +53,6 @@ def list_rice_types() -> List[str]:
     return list(cfg["jenis"].keys()) if cfg else []
 
 
-def _is_lebaran(d: pd.Timestamp, cfg) -> float:
-    return 1.0 if [d.year, d.month] in cfg["lebaran"] else 0.0
-
-
 def _row(prices, resid, date, cfg) -> pd.DataFrame:
     p = list(prices)
     r = {
@@ -65,7 +61,6 @@ def _row(prices, resid, date, cfg) -> pd.DataFrame:
         "rolling_mean_3": float(np.mean(p[-3:])), "diff_t": p[-1] - p[-2],
         "month_sin": float(np.sin(2 * np.pi * date.month / 12)),
         "month_cos": float(np.cos(2 * np.pi * date.month / 12)),
-        "lebaran_next": _is_lebaran(date, cfg),
     }
     return pd.DataFrame([r])[cfg["fitur_xgb"]]
 
@@ -104,11 +99,11 @@ def predict_rice(jenis: str, history: pd.Series, horizon: int) -> List[StepResul
     targets = [last_date + pd.DateOffset(months=h) for h in range(1, horizon + 1)]
 
     # residual in-sample pada riwayat (dipakai sebagai lag residual awal)
-    hist_df = pd.DataFrame({"ds": s.index, "lebaran": [_is_lebaran(d, cfg) for d in s.index]})
+    hist_df = pd.DataFrame({"ds": s.index})
     in_s = prophet.predict(hist_df)["yhat"].values
     resid = list(s.values - in_s)
 
-    fut_df = pd.DataFrame({"ds": targets, "lebaran": [_is_lebaran(d, cfg) for d in targets]})
+    fut_df = pd.DataFrame({"ds": targets})
     fut = prophet.predict(fut_df)
 
     prices = list(s.values)
@@ -139,11 +134,6 @@ def _decompose(prophet, row_df):
             if name in row_df.columns:
                 v = float(row[name])
                 comps.append({"name": name, "label": "Pola Musiman Tahunan" if name == "yearly" else name,
-                              "contribution": trend * v if cfgc.get("mode") == "multiplicative" else v})
-        for name, cfgc in getattr(prophet, "extra_regressors", {}).items():
-            if name in row_df.columns:
-                v = float(row[name])
-                comps.append({"name": name, "label": "Lebaran (Idulfitri)" if name == "lebaran" else name,
                               "contribution": trend * v if cfgc.get("mode") == "multiplicative" else v})
         return {"trend": trend, "components": comps}
     except Exception:

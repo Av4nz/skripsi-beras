@@ -56,9 +56,7 @@ else:
 s = s.asfreq("MS").interpolate(limit_direction="both")  # bulan kosong terisi interpolasi linear (dicatat)
 s = s.loc[START:]
 leb = leb.reindex(s.index).fillna(0)
-TANPA_LEBARAN = os.environ.get("TANPA_LEBARAN") == "1"   # ablasi: semua penanda Lebaran dinolkan (Prophet dan XGBoost)
-if TANPA_LEBARAN:
-    leb = leb * 0.0
+TANPA_LEBARAN = os.environ.get("TANPA_LEBARAN") == "1"   # 1 = tanpa regressor Prophet dan tanpa fitur XGBoost Lebaran (konfigurasi sistem final)
 
 PC = CFG["prophet_tuned"]; XC = CFG["hybrid_xgboost_tuned"]
 
@@ -67,8 +65,11 @@ def fit_prophet(train):
     m = Prophet(yearly_seasonality=int(PC["yearly_order"]), weekly_seasonality=False, daily_seasonality=False,
                 changepoint_prior_scale=PC["changepoint_prior_scale"], seasonality_prior_scale=PC["seasonality_prior_scale"],
                 seasonality_mode=PC["seasonality_mode"])
-    m.add_regressor("lebaran")
-    m.fit(train[["ds", "y", "lebaran"]])
+    if TANPA_LEBARAN:
+        m.fit(train[["ds", "y"]])
+    else:
+        m.add_regressor("lebaran")
+        m.fit(train[["ds", "y", "lebaran"]])
     return m
 
 
@@ -110,7 +111,9 @@ def satu_origin(O):
     for i in range(3, len(hist)):
         d = hist.index[i]
         rows.append(feats_row(hist.values[:i], resid[:i], d)); ys.append(resid[i])
-    keys = ["resid_lag1", "resid_lag2", "price_t", "price_t1", "price_t2", "rolling_mean_3", "diff_t", "month_sin", "month_cos", "lebaran_next"]
+    keys = ["resid_lag1", "resid_lag2", "price_t", "price_t1", "price_t2", "rolling_mean_3", "diff_t", "month_sin", "month_cos"]
+    if not TANPA_LEBARAN:
+        keys.append("lebaran_next")
     Xtr = pd.DataFrame(rows)[keys]
     xp = {k: v for k, v in XC.items() if k not in ("use_exog", "target_mode")}
     xg = XGBRegressor(random_state=42, n_jobs=1, **xp).fit(Xtr, ys)

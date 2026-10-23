@@ -112,7 +112,6 @@ export default async function Home() {
   // Calculate latest price and trend
   const latestData = historical[historical.length - 1];
   const previousData = historical[historical.length - 2];
-  const firstData = historical[0];
 
   const rangeEnd = latestData ? formatMonthYear(latestData.date) : "-";
 
@@ -393,7 +392,7 @@ export default async function Home() {
                 <div className="rounded-2xl border border-border/60 bg-card p-5">
                   <h3 className="font-semibold text-foreground">1 · Facebook Prophet</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                    Model dasar: menangkap tren jangka panjang, pola musiman tahunan, dan penanda Idulfitri.
+                    Model dasar: menangkap tren jangka panjang dan pola musiman tahunan.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border/60 bg-card p-5">

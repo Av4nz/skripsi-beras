@@ -376,7 +376,7 @@ export default function ForecastPage() {
                 <CardDescription className="mt-1">
                   Rincian prediksi dasar Prophet untuk{" "}
                   <span className="font-semibold text-foreground">{monthLong(selected.date)}</span>: tren
-                  ditambah pola musiman tahunan dan penanda Idulfitri. Klik bulan lain pada tabel untuk
+                  ditambah pola musiman tahunan. Klik bulan lain pada tabel untuk
                   melihat rinciannya.
                 </CardDescription>
               </CardHeader>
