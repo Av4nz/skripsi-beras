@@ -83,7 +83,7 @@ const dataSources = [
     name: "PIHPS Nasional",
     items: [
       "Harga beras DI Yogyakarta menurut jenis: Bawah I dan II, Medium I dan II, Super I dan II",
-      "Rata-rata harian per bulan, Januari 2021 sampai Mei 2026",
+      "Rata-rata harian per bulan. Penelitian memakai Januari 2021 sampai Mei 2026, bulan baru ditambahkan otomatis setiap bulan",
     ],
     iconClass: "bg-primary/10 text-primary",
   },
@@ -294,7 +294,7 @@ export default async function AboutPage() {
               {[
                 "Prediksi adalah estimasi dari pola riwayat harga, bukan kepastian harga.",
                 "Pada data pengujian, mempertahankan harga bulan ini lebih akurat daripada model hybrid.",
-                "Data hanya mencakup 65 bulan (Januari 2021 sampai Mei 2026) dan satu wilayah, DI Yogyakarta.",
+                "Hasil pengujian memakai 65 bulan (Januari 2021 sampai Mei 2026) dan satu wilayah, DI Yogyakarta. Bulan yang ditambahkan sesudahnya ikut memperbarui model tetapi tidak dihitung ulang dalam tabel pengujian.",
                 "Keenam jenis beras bergerak serempak, sehingga hasil per jenis bukan bukti yang saling bebas.",
                 "Kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat memengaruhi harga aktual.",
               ].map((it) => (

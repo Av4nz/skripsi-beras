@@ -8,6 +8,7 @@ from typing import List
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -69,6 +70,15 @@ def prediksi(jenis: str = Query(...), horizon: int = Query(1, ge=1, le=rp.MAX_HO
     series += [schemas.TimeSeriesPoint(date=s.date, value=s.hybrid, type="forecast") for s in steps]
     return schemas.RicePredictionResponse(jenis=jenis, horizon=horizon, origin_date=origin,
                                           origin_price=float(hist.iloc[-1]), steps=steps, series=series)
+
+
+@router.get("/info")
+def info(db: Session = Depends(get_db)):
+    """Keadaan data dan model: untuk menampilkan seberapa baru data yang dipakai."""
+    cfg = rp.get_config() or {}
+    terakhir = db.query(func.max(db_models.HargaBerasJenis.date)).scalar()
+    return {"data_terakhir": str(terakhir) if terakhir else None, "model_data_akhir": cfg.get("data_akhir"),
+            "model_dilatih_pada": cfg.get("dilatih_pada"), "jumlah_bulan_model": cfg.get("jumlah_bulan")}
 
 
 @router.get("/metrik", response_model=schemas.RiceMetricsResponse)

@@ -7,6 +7,8 @@ from app.core.database import engine, Base
 from app.services.rice_predictor import load_rice_models
 from app.api.routes import router as api_router
 from app.api.rice_routes import router as rice_router
+from app.api.admin_routes import router as admin_router
+from app.services.rice_trainer import sinkron_saat_start
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -14,6 +16,7 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     # Load ML models (per jenis beras)
     load_rice_models()
+    sinkron_saat_start()   # latih ulang di latar belakang bila DB lebih baru dari model
     yield
     # Cleanup if needed
 
@@ -42,3 +45,4 @@ def health_check():
 
 app.include_router(api_router)
 app.include_router(rice_router)
+app.include_router(admin_router)

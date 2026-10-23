@@ -11,6 +11,7 @@ Modul ini tidak mengimpor FastAPI maupun SQLAlchemy supaya dapat diuji terpisah.
 """
 import json
 import os
+import threading
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
@@ -24,7 +25,8 @@ ARTIFACT_DIR = os.path.join(ROOT_DIR, "ml_models", "beras")
 
 MAX_HORIZON = 6   # uji horizon 1 sampai 6 bulan; galat membesar seiring horizon
 
-_state: Dict = {"config": None, "models": {}}
+_state: Dict = {"bundle": None}   # (config, models), diganti utuh agar pembaca tidak melihat setengah-baru
+_kunci = threading.Lock()
 
 
 class RiceModelError(ValueError):
@@ -45,11 +47,21 @@ def load_rice_models(artifact_dir: Optional[str] = None) -> None:
             "prophet": joblib.load(os.path.join(sub, "prophet.pkl")),
             "xgb": joblib.load(os.path.join(sub, "xgb.pkl")),
         }
-    _state["config"], _state["models"] = cfg, models
+    set_rice_models(cfg, models)
+
+
+def set_rice_models(cfg: dict, models: dict) -> None:
+    with _kunci:
+        _state["bundle"] = (cfg, models)
+
+
+def get_config() -> Optional[dict]:
+    b = _state["bundle"]
+    return b[0] if b else None
 
 
 def list_rice_types() -> List[str]:
-    cfg = _state["config"]
+    cfg = get_config()
     return list(cfg["jenis"].keys()) if cfg else []
 
 
@@ -82,10 +94,11 @@ def predict_rice(jenis: str, history: pd.Series, horizon: int) -> List[StepResul
     history: harga bulanan (indeks tanggal awal bulan, urut naik) untuk satu jenis.
     Prediksi dimulai dari bulan terakhir pada history.
     """
-    cfg = _state["config"]
-    if cfg is None:
+    bundle = _state["bundle"]
+    if bundle is None:
         raise RiceModelError("Model belum dimuat.")
-    if jenis not in _state["models"]:
+    cfg, semua_model = bundle
+    if jenis not in semua_model:
         raise RiceModelError(f"Jenis beras tidak dikenal: {jenis}")
     if not (1 <= horizon <= MAX_HORIZON):
         raise RiceModelError(f"Horizon harus 1 sampai {MAX_HORIZON} bulan.")
@@ -93,7 +106,7 @@ def predict_rice(jenis: str, history: pd.Series, horizon: int) -> List[StepResul
     if len(s) < 6:
         raise RiceModelError("Riwayat harga kurang dari 6 bulan.")
 
-    prophet, xgb = _state["models"][jenis]["prophet"], _state["models"][jenis]["xgb"]
+    prophet, xgb = semua_model[jenis]["prophet"], semua_model[jenis]["xgb"]
     phi = cfg["jenis"][jenis]["phi"]
     last_date = s.index[-1]
     targets = [last_date + pd.DateOffset(months=h) for h in range(1, horizon + 1)]
