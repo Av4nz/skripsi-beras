@@ -44,6 +44,7 @@ function SortHead({
 export default function HistoricalPage() {
   const [data, setData] = useState<HargaBerasSchema[]>([]);
   const [exog, setExog] = useState<HargaBerasSchema[]>([]);
+  const [siap, setSiap] = useState(false);
   const [jenisList, setJenisList] = useState<string[]>([]);
   const [jenis, setJenis] = useState(JENIS_BAWAAN);
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ export default function HistoricalPage() {
         const [daftar, faktor] = await Promise.all([apiService.getJenis(), apiService.getHistoricalData()]);
         setJenisList(daftar);
         setExog(faktor);
+        setSiap(true);
       } catch (error) {
         console.error("Failed to load historical data", error);
         toast.error("Gagal memuat data historis dari server", { id: "historical-data-error" });
@@ -80,7 +82,7 @@ export default function HistoricalPage() {
   }, []);
 
   useEffect(() => {
-    if (exog.length === 0) return;
+    if (!siap) return;
     let batal = false;
     async function loadJenis() {
       setLoadingJenis(true);
@@ -117,7 +119,7 @@ export default function HistoricalPage() {
     return () => {
       batal = true;
     };
-  }, [jenis, exog]);
+  }, [jenis, exog, siap]);
 
   const rangeFilteredData = React.useMemo(() => {
     if (rangeYears === "all" || data.length === 0) return data;
