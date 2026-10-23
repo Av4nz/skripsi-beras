@@ -9,7 +9,6 @@ import {
   Activity,
   Target,
   Sigma,
-  CloudRain,
   Wheat,
   TrendingUp,
   BadgeInfo,
@@ -86,24 +85,6 @@ const dataSources = [
       "Rata-rata harian per bulan. Penelitian memakai Januari 2021 sampai Mei 2026, bulan baru ditambahkan otomatis setiap bulan",
     ],
     iconClass: "bg-primary/10 text-primary",
-  },
-  {
-    icon: <Database />,
-    name: "Badan Pangan Nasional (Bapanas)",
-    items: ["Harga Gabah Kering Giling (GKG), ditampilkan sebagai informasi"],
-    iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
-  },
-  {
-    icon: <CloudRain />,
-    name: "Open-Meteo API",
-    items: ["Curah hujan historis, ditampilkan sebagai informasi"],
-    iconClass: "bg-accent/20 text-accent-foreground dark:text-accent",
-  },
-  {
-    icon: <Database />,
-    name: "Badan Pusat Statistik (BPS)",
-    items: ["Produksi padi", "Inflasi pangan", "Keduanya ditampilkan sebagai informasi"],
-    iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
   },
 ];
 
@@ -261,25 +242,18 @@ export default async function AboutPage() {
           </CardContent>
         </Card>
 
-        {/* Faktor sebagai informasi */}
+        {/* Tanpa faktor eksternal */}
         <Card>
           <CardHeader>
-            <CardTitle>Faktor yang Memengaruhi Harga</CardTitle>
+            <CardTitle>Tanpa Faktor Eksternal</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {["Harga GKG", "Curah Hujan", "Produksi Padi", "Inflasi Pangan"].map((v) => (
-                <Badge key={v} variant="muted">
-                  {v}
-                </Badge>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Data lampau faktor ini ditampilkan pada halaman Data Historis sebagai{" "}
-              <span className="font-medium text-foreground">informasi</span> dan tidak dimasukkan
-              pengguna. Pada pengujian, memasukkan faktor bulan berjalan sebagai fitur model tidak
-              meningkatkan ketepatan prediksi harga bulan berikutnya, sehingga model sistem hanya
-              memakai riwayat harga dan kalender.
+            <p className="text-sm text-muted-foreground">
+              Model hanya memakai <span className="font-medium text-foreground">riwayat harga beras
+              per jenis</span> dan pola bulan dalam setahun. Pengguna tidak memasukkan faktor apa pun.
+              Pada pengujian, menambahkan faktor eksternal seperti harga gabah, curah hujan, produksi
+              padi, dan inflasi pangan tidak meningkatkan ketepatan prediksi harga bulan berikutnya,
+              sehingga faktor tersebut tidak dipakai dan tidak ditampilkan.
             </p>
           </CardContent>
         </Card>

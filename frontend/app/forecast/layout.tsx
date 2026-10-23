@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Simulasi Prediksi",
+  title: "Prediksi Harga Beras",
   description:
-    "Simulasikan prediksi harga beras dengan menyesuaikan faktor eksternal seperti curah hujan, produksi padi, inflasi, dan harga GKG.",
+    "Prediksi harga beras per jenis di DI Yogyakarta untuk 1 sampai 6 bulan ke depan, dibandingkan dengan pembanding sederhana.",
 };
 
 export default function ForecastLayout({

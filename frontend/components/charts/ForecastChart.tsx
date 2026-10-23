@@ -11,7 +11,7 @@ import {
   YAxis,
   Legend,
 } from "recharts";
-import { HargaBerasSchema, StepDetail } from "@/types/api";
+import { HargaJenisPoint, StepDetail } from "@/types/api";
 import { cn } from "@/lib/utils";
 import {
   axisTick,
@@ -28,7 +28,7 @@ export interface ComparisonPoint {
 }
 
 interface ForecastChartProps {
-  historicalData: HargaBerasSchema[];
+  historicalData: HargaJenisPoint[];
   predictions?: StepDetail[];
   /** Pembanding sederhana (opsional): harga bulan ini dipertahankan dan ARIMA. */
   comparison?: ComparisonPoint[];

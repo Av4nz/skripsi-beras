@@ -1,6 +1,5 @@
 import axios from "axios";
 import {
-  HargaBerasSchema,
   HargaJenisPoint,
   RiceMetricsResponse,
   RicePredictionResponse,
@@ -16,14 +15,6 @@ const apiClient = axios.create({
 });
 
 export const apiService = {
-  async getHistoricalData(skip = 0, limit = 100): Promise<HargaBerasSchema[]> {
-    // We request a larger limit if needed, or default to backend's 100
-    // Backend orders by date DESC, so we might want to reverse it for charts
-    const response = await apiClient.get<HargaBerasSchema[]>(`/data/historical?skip=${skip}&limit=${limit}`);
-    // Reverse to get chronological order (oldest first) for UI charts
-    return response.data.reverse();
-  },
-
   // ----- API Beras: per jenis, tanpa masukan faktor eksternal -----
   async getJenis(): Promise<string[]> {
     const response = await apiClient.get<string[]>("/beras/jenis");
