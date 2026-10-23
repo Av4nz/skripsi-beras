@@ -1,0 +1,339 @@
+{
+    "protocol": {
+        "target_start": "2021-01-01",
+        "validation": [
+            "2023-01-01",
+            "2023-12-01"
+        ],
+        "test": [
+            "2024-01-01",
+            "2026-05-01"
+        ],
+        "n_val": 12,
+        "n_test": 29,
+        "refit": "setiap bulan (expanding window)"
+    },
+    "config": {
+        "scheme": "realistis: fitur bulan T -> harga bulan T+1",
+        "prophet_tuned": {
+            "changepoint_prior_scale": 0.1,
+            "seasonality_prior_scale": 0.1,
+            "seasonality_mode": "multiplicative",
+            "yearly_order": 3,
+            "use_exog": false,
+            "reg_prior_scale": null
+        },
+        "xgboost_only_tuned": {
+            "n_estimators": 50,
+            "learning_rate": 0.05,
+            "max_depth": 6,
+            "subsample": 0.8,
+            "colsample_bytree": 0.6,
+            "min_child_weight": 1,
+            "gamma": 0.0,
+            "reg_alpha": 0.0,
+            "reg_lambda": 5.0,
+            "use_exog": false,
+            "target_mode": "diff"
+        },
+        "xgboost_only_features": [
+            "price_t",
+            "price_t1",
+            "price_t2",
+            "rolling_mean_3",
+            "diff_t",
+            "month_sin",
+            "month_cos",
+            "lebaran_next"
+        ],
+        "hybrid_prophet_tuned": {
+            "changepoint_prior_scale": 0.1,
+            "seasonality_prior_scale": 0.1,
+            "seasonality_mode": "multiplicative",
+            "yearly_order": 3,
+            "use_exog": false,
+            "reg_prior_scale": null
+        },
+        "hybrid_xgboost_tuned": {
+            "n_estimators": 50,
+            "learning_rate": 0.01,
+            "max_depth": 2,
+            "subsample": 0.6,
+            "colsample_bytree": 1.0,
+            "min_child_weight": 1,
+            "gamma": 0.0,
+            "reg_alpha": 0.0,
+            "reg_lambda": 5.0,
+            "use_exog": false,
+            "target_mode": "resid"
+        },
+        "hybrid_xgboost_features": [
+            "resid_lag1",
+            "resid_lag2",
+            "price_t",
+            "price_t1",
+            "price_t2",
+            "rolling_mean_3",
+            "diff_t",
+            "month_sin",
+            "month_cos",
+            "lebaran_next"
+        ],
+        "defaults": {
+            "prophet": {
+                "changepoint_prior_scale": 0.05,
+                "seasonality_prior_scale": 10.0,
+                "seasonality_mode": "additive",
+                "yearly_order": 10,
+                "use_exog": true,
+                "reg_prior_scale": 10.0
+            },
+            "xgboost_only": {
+                "n_estimators": 100,
+                "learning_rate": 0.3,
+                "max_depth": 6,
+                "subsample": 1.0,
+                "colsample_bytree": 1.0,
+                "min_child_weight": 1,
+                "gamma": 0.0,
+                "reg_alpha": 0.0,
+                "reg_lambda": 1.0,
+                "use_exog": true,
+                "target_mode": "level"
+            },
+            "hybrid_xgboost": {
+                "n_estimators": 100,
+                "learning_rate": 0.3,
+                "max_depth": 6,
+                "subsample": 1.0,
+                "colsample_bytree": 1.0,
+                "min_child_weight": 1,
+                "gamma": 0.0,
+                "reg_alpha": 0.0,
+                "reg_lambda": 1.0,
+                "use_exog": true,
+                "target_mode": "resid"
+            }
+        }
+    },
+    "results": {
+        "Naive (harga bulan ini)": {
+            "validation_2023": {
+                "MAE": 147.5,
+                "RMSE": 219.95108698678126,
+                "MAPE": 0.0111953711236961
+            },
+            "test": {
+                "MAE": 121.5241379310345,
+                "RMSE": 289.29527361837626,
+                "MAPE": 0.00833900122376247
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 231.1833333333334,
+                    "RMSE": 436.54209375118336,
+                    "MAPE": 0.015760708573539617
+                },
+                "2025": {
+                    "MAE": 62.5,
+                    "RMSE": 108.10215438802949,
+                    "MAPE": 0.00439187771721969
+                },
+                "2026": {
+                    "MAE": 0.0,
+                    "RMSE": 0.0,
+                    "MAPE": 0.0
+                }
+            },
+            "direction_acc_test": 0.5172413793103449
+        },
+        "Prophet-only (default)": {
+            "validation_2023": {
+                "MAE": 2742.4438425532717,
+                "RMSE": 4278.921404649325,
+                "MAPE": 0.2102799735622842
+            },
+            "test": {
+                "MAE": 276.4763753571294,
+                "RMSE": 371.3687068113965,
+                "MAPE": 0.019384077767822774
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 406.01320663918233,
+                    "RMSE": 482.65616979343565,
+                    "MAPE": 0.028296882219986916
+                },
+                "2025": {
+                    "MAE": 228.48463844339827,
+                    "RMSE": 311.6453609708942,
+                    "MAPE": 0.016169640557753315
+                },
+                "2026": {
+                    "MAE": 80.76814887315705,
+                    "RMSE": 87.82831492419224,
+                    "MAPE": 0.00570799638679555
+                }
+            },
+            "direction_acc_test": 0.10344827586206896
+        },
+        "Prophet-only (tuned)": {
+            "validation_2023": {
+                "MAE": 171.2295079385467,
+                "RMSE": 201.8278528228274,
+                "MAPE": 0.01296544348912406
+            },
+            "test": {
+                "MAE": 383.01955898916935,
+                "RMSE": 468.94564183118734,
+                "MAPE": 0.02686619576870525
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 404.4594092073862,
+                    "RMSE": 509.10565320073897,
+                    "MAPE": 0.02821123297153899
+                },
+                "2025": {
+                    "MAE": 356.186581445543,
+                    "RMSE": 443.5227766163473,
+                    "MAPE": 0.025055717033392915
+                },
+                "2026": {
+                    "MAE": 395.96306457015197,
+                    "RMSE": 425.8117426282086,
+                    "MAPE": 0.027983255446653855
+                }
+            },
+            "direction_acc_test": 0.2413793103448276
+        },
+        "XGBoost-only (default)": {
+            "validation_2023": {
+                "MAE": 157.24817382812503,
+                "RMSE": 227.6629693746076,
+                "MAPE": 0.01190598273652166
+            },
+            "test": {
+                "MAE": 234.4402545797414,
+                "RMSE": 367.6355067863246,
+                "MAPE": 0.016367083941137364
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 369.390537109375,
+                    "RMSE": 530.6029067183999,
+                    "MAPE": 0.025673674254032816
+                },
+                "2025": {
+                    "MAE": 177.29605143229173,
+                    "RMSE": 208.64868721773857,
+                    "MAPE": 0.012475351511180482
+                },
+                "2026": {
+                    "MAE": 47.7056640625,
+                    "RMSE": 61.049943657114085,
+                    "MAPE": 0.0033714250220848057
+                }
+            },
+            "direction_acc_test": 0.2413793103448276
+        },
+        "XGBoost-only (tuned)": {
+            "validation_2023": {
+                "MAE": 109.93592426300044,
+                "RMSE": 151.57354010876145,
+                "MAPE": 0.008325464100008083
+            },
+            "test": {
+                "MAE": 151.24540932490922,
+                "RMSE": 295.9052699647077,
+                "MAPE": 0.010406832474808307
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 276.81400588671386,
+                    "RMSE": 447.6272830978402,
+                    "MAPE": 0.018894068943251543
+                },
+                "2025": {
+                    "MAE": 82.40254378954585,
+                    "RMSE": 105.4575649414247,
+                    "MAPE": 0.005811027827834086
+                },
+                "2026": {
+                    "MAE": 15.103654861450195,
+                    "RMSE": 16.37158557113992,
+                    "MAPE": 0.0010673961032826994
+                }
+            },
+            "direction_acc_test": 0.27586206896551724
+        },
+        "Hybrid (default)": {
+            "validation_2023": {
+                "MAE": 2742.443877994732,
+                "RMSE": 4278.921484383934,
+                "MAPE": 0.21027997647450647
+            },
+            "test": {
+                "MAE": 281.7664783775206,
+                "RMSE": 364.46580420995645,
+                "MAPE": 0.019751466678406274
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 401.6080132435621,
+                    "RMSE": 474.7060495145658,
+                    "MAPE": 0.027977689600989234
+                },
+                "2025": {
+                    "MAE": 231.30957709638247,
+                    "RMSE": 286.07379308476595,
+                    "MAPE": 0.01636151865940683
+                },
+                "2026": {
+                    "MAE": 115.24335777375272,
+                    "RMSE": 182.2173253487873,
+                    "MAPE": 0.008144406909805845
+                }
+            },
+            "direction_acc_test": 0.10344827586206896
+        },
+        "Hybrid (tuned)": {
+            "validation_2023": {
+                "MAE": 172.1767850895949,
+                "RMSE": 201.81462501887455,
+                "MAPE": 0.013041522018513656
+            },
+            "test": {
+                "MAE": 367.54381843208245,
+                "RMSE": 454.63406116786115,
+                "MAPE": 0.02576838933217967
+            },
+            "test_per_year": {
+                "2024": {
+                    "MAE": 391.1861912586117,
+                    "RMSE": 499.0393232366455,
+                    "MAPE": 0.02726389188569137
+                },
+                "2025": {
+                    "MAE": 344.2627229321083,
+                    "RMSE": 429.3871754807137,
+                    "MAPE": 0.024212402567890357
+                },
+                "2026": {
+                    "MAE": 366.67675284835025,
+                    "RMSE": 398.27343531798874,
+                    "MAPE": 0.02591355143804595
+                }
+            },
+            "direction_acc_test": 0.2413793103448276
+        }
+    },
+    "forecast_next_month": {
+        "bulan_target": "2026-06-01",
+        "Naive": 14150.0,
+        "Prophet-only (tuned)": 14057.520471248728,
+        "XGBoost-only (tuned)": 14169.771871566772,
+        "Hybrid (tuned)": 14031.606864605052
+    },
+    "runtime_sec": 4278.2679760456085
+}

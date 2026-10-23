@@ -1,0 +1,103 @@
+{
+    "scheme": "realistis: fitur bulan T -> harga bulan T+1",
+    "prophet_tuned": {
+        "changepoint_prior_scale": 0.1,
+        "seasonality_prior_scale": 0.1,
+        "seasonality_mode": "multiplicative",
+        "yearly_order": 3,
+        "use_exog": false,
+        "reg_prior_scale": null
+    },
+    "xgboost_only_tuned": {
+        "n_estimators": 50,
+        "learning_rate": 0.05,
+        "max_depth": 6,
+        "subsample": 0.8,
+        "colsample_bytree": 0.6,
+        "min_child_weight": 1,
+        "gamma": 0.0,
+        "reg_alpha": 0.0,
+        "reg_lambda": 5.0,
+        "use_exog": false,
+        "target_mode": "diff"
+    },
+    "xgboost_only_features": [
+        "price_t",
+        "price_t1",
+        "price_t2",
+        "rolling_mean_3",
+        "diff_t",
+        "month_sin",
+        "month_cos",
+        "lebaran_next"
+    ],
+    "hybrid_prophet_tuned": {
+        "changepoint_prior_scale": 0.1,
+        "seasonality_prior_scale": 0.1,
+        "seasonality_mode": "multiplicative",
+        "yearly_order": 3,
+        "use_exog": false,
+        "reg_prior_scale": null
+    },
+    "hybrid_xgboost_tuned": {
+        "n_estimators": 50,
+        "learning_rate": 0.01,
+        "max_depth": 2,
+        "subsample": 0.6,
+        "colsample_bytree": 1.0,
+        "min_child_weight": 1,
+        "gamma": 0.0,
+        "reg_alpha": 0.0,
+        "reg_lambda": 5.0,
+        "use_exog": false,
+        "target_mode": "resid"
+    },
+    "hybrid_xgboost_features": [
+        "resid_lag1",
+        "resid_lag2",
+        "price_t",
+        "price_t1",
+        "price_t2",
+        "rolling_mean_3",
+        "diff_t",
+        "month_sin",
+        "month_cos",
+        "lebaran_next"
+    ],
+    "defaults": {
+        "prophet": {
+            "changepoint_prior_scale": 0.05,
+            "seasonality_prior_scale": 10.0,
+            "seasonality_mode": "additive",
+            "yearly_order": 10,
+            "use_exog": true,
+            "reg_prior_scale": 10.0
+        },
+        "xgboost_only": {
+            "n_estimators": 100,
+            "learning_rate": 0.3,
+            "max_depth": 6,
+            "subsample": 1.0,
+            "colsample_bytree": 1.0,
+            "min_child_weight": 1,
+            "gamma": 0.0,
+            "reg_alpha": 0.0,
+            "reg_lambda": 1.0,
+            "use_exog": true,
+            "target_mode": "level"
+        },
+        "hybrid_xgboost": {
+            "n_estimators": 100,
+            "learning_rate": 0.3,
+            "max_depth": 6,
+            "subsample": 1.0,
+            "colsample_bytree": 1.0,
+            "min_child_weight": 1,
+            "gamma": 0.0,
+            "reg_alpha": 0.0,
+            "reg_lambda": 1.0,
+            "use_exog": true,
+            "target_mode": "resid"
+        }
+    }
+}

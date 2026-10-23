@@ -1,0 +1,1169 @@
+{
+ "protokol": "walk-forward, expanding window, refit tiap bulan; uji target Januari 2024 sampai Mei 2026; tanpa faktor eksternal dan tanpa penanda Lebaran; hyperparameter dibekukan dari trainv3",
+ "metrik": {
+  "Bawah I": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.744,
+    "mae": 100.8,
+    "rmse": 229.0
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.84,
+    "mae": 114.1,
+    "rmse": 231.2
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 2.304,
+    "mae": 306.2,
+    "rmse": 375.8
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 2.187,
+    "mae": 290.8,
+    "rmse": 362.5
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.467,
+    "mae": 198.7,
+    "rmse": 364.0
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.71,
+    "mae": 232.1,
+    "rmse": 377.9
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 3.518,
+    "mae": 467.7,
+    "rmse": 537.3
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 3.491,
+    "mae": 464.2,
+    "rmse": 536.1
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 1.871,
+    "mae": 251.7,
+    "rmse": 415.6
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 2.151,
+    "mae": 289.7,
+    "rmse": 453.7
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 4.394,
+    "mae": 582.2,
+    "rmse": 657.7
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 4.379,
+    "mae": 580.2,
+    "rmse": 655.5
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 2.148,
+    "mae": 286.5,
+    "rmse": 433.8
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 2.49,
+    "mae": 331.0,
+    "rmse": 529.6
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 5.275,
+    "mae": 696.9,
+    "rmse": 769.7
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 5.266,
+    "mae": 695.9,
+    "rmse": 768.3
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 2.017,
+    "mae": 267.2,
+    "rmse": 408.2
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 2.327,
+    "mae": 307.6,
+    "rmse": 524.0
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 5.798,
+    "mae": 763.6,
+    "rmse": 874.5
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 5.78,
+    "mae": 761.3,
+    "rmse": 874.0
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 1.898,
+    "mae": 249.8,
+    "rmse": 392.8
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 2.22,
+    "mae": 292.1,
+    "rmse": 525.7
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 6.389,
+    "mae": 839.6,
+    "rmse": 977.5
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 6.381,
+    "mae": 838.6,
+    "rmse": 977.9
+   }
+  ],
+  "Bawah II": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.661,
+    "mae": 83.6,
+    "rmse": 191.6
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.783,
+    "mae": 99.1,
+    "rmse": 194.9
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 2.305,
+    "mae": 284.6,
+    "rmse": 345.8
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 2.223,
+    "mae": 274.6,
+    "rmse": 337.7
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.271,
+    "mae": 160.5,
+    "rmse": 305.8
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.482,
+    "mae": 187.1,
+    "rmse": 310.9
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 3.345,
+    "mae": 412.3,
+    "rmse": 495.9
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 3.365,
+    "mae": 414.6,
+    "rmse": 500.9
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 1.662,
+    "mae": 207.9,
+    "rmse": 364.6
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 1.922,
+    "mae": 240.2,
+    "rmse": 392.4
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 4.372,
+    "mae": 537.2,
+    "rmse": 631.2
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 4.385,
+    "mae": 538.8,
+    "rmse": 633.5
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 1.915,
+    "mae": 236.8,
+    "rmse": 395.5
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 2.207,
+    "mae": 271.8,
+    "rmse": 472.6
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 5.328,
+    "mae": 652.3,
+    "rmse": 766.6
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 5.35,
+    "mae": 655.0,
+    "rmse": 768.4
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 1.943,
+    "mae": 238.7,
+    "rmse": 389.6
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 2.254,
+    "mae": 276.1,
+    "rmse": 479.5
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 6.364,
+    "mae": 778.0,
+    "rmse": 907.1
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 6.384,
+    "mae": 780.5,
+    "rmse": 908.6
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 2.002,
+    "mae": 244.9,
+    "rmse": 397.8
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 2.522,
+    "mae": 308.4,
+    "rmse": 505.2
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 7.379,
+    "mae": 901.4,
+    "rmse": 1053.5
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 7.402,
+    "mae": 904.2,
+    "rmse": 1054.5
+   }
+  ],
+  "Medium I": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.762,
+    "mae": 116.4,
+    "rmse": 276.5
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.847,
+    "mae": 129.6,
+    "rmse": 275.3
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 2.523,
+    "mae": 378.0,
+    "rmse": 458.1
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 2.382,
+    "mae": 357.2,
+    "rmse": 440.8
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.499,
+    "mae": 228.8,
+    "rmse": 437.6
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.713,
+    "mae": 261.7,
+    "rmse": 443.1
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 3.792,
+    "mae": 568.8,
+    "rmse": 646.9
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 3.793,
+    "mae": 569.0,
+    "rmse": 648.8
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 1.923,
+    "mae": 291.4,
+    "rmse": 497.8
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 2.163,
+    "mae": 327.9,
+    "rmse": 524.0
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 4.635,
+    "mae": 692.9,
+    "rmse": 774.7
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 4.641,
+    "mae": 694.0,
+    "rmse": 775.6
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 2.195,
+    "mae": 329.6,
+    "rmse": 513.2
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 2.453,
+    "mae": 367.2,
+    "rmse": 588.1
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 5.422,
+    "mae": 808.0,
+    "rmse": 884.5
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 5.429,
+    "mae": 809.1,
+    "rmse": 884.5
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 2.071,
+    "mae": 308.8,
+    "rmse": 473.9
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 2.308,
+    "mae": 343.4,
+    "rmse": 564.0
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 5.837,
+    "mae": 867.4,
+    "rmse": 985.6
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 5.836,
+    "mae": 867.1,
+    "rmse": 986.1
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 1.999,
+    "mae": 296.3,
+    "rmse": 451.7
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 2.24,
+    "mae": 331.9,
+    "rmse": 556.4
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 6.279,
+    "mae": 931.1,
+    "rmse": 1092.0
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 6.279,
+    "mae": 931.1,
+    "rmse": 1093.1
+   }
+  ],
+  "Medium II": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.834,
+    "mae": 121.5,
+    "rmse": 288.0
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.949,
+    "mae": 138.4,
+    "rmse": 288.0
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 2.625,
+    "mae": 374.6,
+    "rmse": 460.4
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 2.498,
+    "mae": 356.6,
+    "rmse": 444.1
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.643,
+    "mae": 239.1,
+    "rmse": 458.1
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.916,
+    "mae": 279.2,
+    "rmse": 470.9
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 3.875,
+    "mae": 553.0,
+    "rmse": 644.3
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 3.859,
+    "mae": 550.7,
+    "rmse": 644.0
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 2.133,
+    "mae": 307.8,
+    "rmse": 529.9
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 2.438,
+    "mae": 352.2,
+    "rmse": 569.4
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 4.815,
+    "mae": 684.7,
+    "rmse": 771.4
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 4.813,
+    "mae": 684.4,
+    "rmse": 769.6
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 2.464,
+    "mae": 351.8,
+    "rmse": 554.8
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 2.815,
+    "mae": 400.4,
+    "rmse": 655.3
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 5.67,
+    "mae": 803.2,
+    "rmse": 880.6
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 5.655,
+    "mae": 801.1,
+    "rmse": 878.0
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 2.301,
+    "mae": 325.8,
+    "rmse": 519.3
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 2.683,
+    "mae": 379.1,
+    "rmse": 638.4
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 6.162,
+    "mae": 869.8,
+    "rmse": 979.4
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 6.153,
+    "mae": 868.5,
+    "rmse": 977.1
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 2.195,
+    "mae": 308.9,
+    "rmse": 501.7
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 2.597,
+    "mae": 365.1,
+    "rmse": 635.3
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 6.795,
+    "mae": 957.1,
+    "rmse": 1087.6
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 6.777,
+    "mae": 954.6,
+    "rmse": 1085.7
+   }
+  ],
+  "Super I": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.541,
+    "mae": 88.8,
+    "rmse": 228.2
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.566,
+    "mae": 93.0,
+    "rmse": 228.6
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 1.602,
+    "mae": 259.3,
+    "rmse": 314.7
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 1.53,
+    "mae": 247.7,
+    "rmse": 301.6
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.06,
+    "mae": 174.1,
+    "rmse": 357.1
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.196,
+    "mae": 196.7,
+    "rmse": 369.8
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 2.338,
+    "mae": 379.2,
+    "rmse": 444.3
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 2.396,
+    "mae": 388.4,
+    "rmse": 452.5
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 1.351,
+    "mae": 221.1,
+    "rmse": 393.0
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 1.537,
+    "mae": 251.7,
+    "rmse": 419.9
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 2.872,
+    "mae": 464.9,
+    "rmse": 551.9
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 2.932,
+    "mae": 474.5,
+    "rmse": 562.3
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 1.555,
+    "mae": 253.0,
+    "rmse": 383.8
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 1.78,
+    "mae": 289.3,
+    "rmse": 436.1
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 3.388,
+    "mae": 547.1,
+    "rmse": 647.3
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 3.431,
+    "mae": 554.1,
+    "rmse": 658.2
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 1.589,
+    "mae": 257.1,
+    "rmse": 346.7
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 1.779,
+    "mae": 287.8,
+    "rmse": 405.7
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 3.797,
+    "mae": 612.0,
+    "rmse": 743.0
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 3.84,
+    "mae": 619.1,
+    "rmse": 754.9
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 1.653,
+    "mae": 266.3,
+    "rmse": 326.4
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 1.831,
+    "mae": 295.3,
+    "rmse": 392.0
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 4.15,
+    "mae": 668.4,
+    "rmse": 837.0
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 4.2,
+    "mae": 676.4,
+    "rmse": 849.1
+   }
+  ],
+  "Super II": [
+   {
+    "horizon": 1,
+    "model": "naive",
+    "n_uji": 29,
+    "mape": 0.686,
+    "mae": 107.7,
+    "rmse": 288.2
+   },
+   {
+    "horizon": 1,
+    "model": "arima",
+    "n_uji": 29,
+    "mape": 0.732,
+    "mae": 115.0,
+    "rmse": 282.2
+   },
+   {
+    "horizon": 1,
+    "model": "prophet",
+    "n_uji": 29,
+    "mape": 2.31,
+    "mae": 354.8,
+    "rmse": 455.9
+   },
+   {
+    "horizon": 1,
+    "model": "hybrid",
+    "n_uji": 29,
+    "mape": 2.183,
+    "mae": 335.5,
+    "rmse": 440.3
+   },
+   {
+    "horizon": 2,
+    "model": "naive",
+    "n_uji": 28,
+    "mape": 1.338,
+    "mae": 210.5,
+    "rmse": 461.2
+   },
+   {
+    "horizon": 2,
+    "model": "arima",
+    "n_uji": 28,
+    "mape": 1.513,
+    "mae": 238.4,
+    "rmse": 469.4
+   },
+   {
+    "horizon": 2,
+    "model": "prophet",
+    "n_uji": 28,
+    "mape": 3.399,
+    "mae": 522.8,
+    "rmse": 642.1
+   },
+   {
+    "horizon": 2,
+    "model": "hybrid",
+    "n_uji": 28,
+    "mape": 3.455,
+    "mae": 531.3,
+    "rmse": 652.3
+   },
+   {
+    "horizon": 3,
+    "model": "naive",
+    "n_uji": 27,
+    "mape": 1.695,
+    "mae": 265.0,
+    "rmse": 519.1
+   },
+   {
+    "horizon": 3,
+    "model": "arima",
+    "n_uji": 27,
+    "mape": 1.947,
+    "mae": 304.7,
+    "rmse": 549.5
+   },
+   {
+    "horizon": 3,
+    "model": "prophet",
+    "n_uji": 27,
+    "mape": 4.217,
+    "mae": 646.4,
+    "rmse": 775.3
+   },
+   {
+    "horizon": 3,
+    "model": "hybrid",
+    "n_uji": 27,
+    "mape": 4.291,
+    "mae": 657.6,
+    "rmse": 786.2
+   },
+   {
+    "horizon": 4,
+    "model": "naive",
+    "n_uji": 26,
+    "mape": 1.95,
+    "mae": 301.9,
+    "rmse": 518.1
+   },
+   {
+    "horizon": 4,
+    "model": "arima",
+    "n_uji": 26,
+    "mape": 2.246,
+    "mae": 346.8,
+    "rmse": 596.3
+   },
+   {
+    "horizon": 4,
+    "model": "prophet",
+    "n_uji": 26,
+    "mape": 4.931,
+    "mae": 752.7,
+    "rmse": 890.4
+   },
+   {
+    "horizon": 4,
+    "model": "hybrid",
+    "n_uji": 26,
+    "mape": 4.975,
+    "mae": 759.4,
+    "rmse": 898.1
+   },
+   {
+    "horizon": 5,
+    "model": "naive",
+    "n_uji": 25,
+    "mape": 1.883,
+    "mae": 288.5,
+    "rmse": 458.8
+   },
+   {
+    "horizon": 5,
+    "model": "arima",
+    "n_uji": 25,
+    "mape": 2.16,
+    "mae": 330.7,
+    "rmse": 554.6
+   },
+   {
+    "horizon": 5,
+    "model": "prophet",
+    "n_uji": 25,
+    "mape": 5.443,
+    "mae": 827.5,
+    "rmse": 1008.0
+   },
+   {
+    "horizon": 5,
+    "model": "hybrid",
+    "n_uji": 25,
+    "mape": 5.501,
+    "mae": 836.3,
+    "rmse": 1015.8
+   },
+   {
+    "horizon": 6,
+    "model": "naive",
+    "n_uji": 24,
+    "mape": 1.858,
+    "mae": 282.2,
+    "rmse": 415.1
+   },
+   {
+    "horizon": 6,
+    "model": "arima",
+    "n_uji": 24,
+    "mape": 2.132,
+    "mae": 323.8,
+    "rmse": 523.1
+   },
+   {
+    "horizon": 6,
+    "model": "prophet",
+    "n_uji": 24,
+    "mape": 5.934,
+    "mae": 900.7,
+    "rmse": 1146.5
+   },
+   {
+    "horizon": 6,
+    "model": "hybrid",
+    "n_uji": 24,
+    "mape": 5.984,
+    "mae": 908.2,
+    "rmse": 1154.9
+   }
+  ]
+ }
+}

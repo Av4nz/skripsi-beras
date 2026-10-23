@@ -24,11 +24,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Sistem Prediksi Harga Beras Medium II — DI Yogyakarta",
+    default: "Sistem Prediksi Harga Beras — DI Yogyakarta",
     template: "%s | Prediksi Harga Beras DIY",
   },
   description:
-    "Sistem prediksi harga beras medium II di DI Yogyakarta berbasis Hybrid Model Prophet & XGBoost untuk mendukung ketahanan pangan daerah.",
+    "Sistem prediksi harga beras menurut jenis di DI Yogyakarta berbasis Hybrid Model Prophet & XGBoost, dibandingkan terbuka dengan pembanding sederhana.",
 };
 
 export default function RootLayout({
