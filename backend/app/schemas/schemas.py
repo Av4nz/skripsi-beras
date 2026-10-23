@@ -64,3 +64,46 @@ class MetricsSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ---------------------------------------------------------------------------
+# API "Beras": per jenis, tanpa masukan faktor eksternal
+# ---------------------------------------------------------------------------
+class HargaJenisPoint(BaseModel):
+    date: datetime.date
+    price: float
+
+
+class RiceStep(BaseModel):
+    step: int
+    date: datetime.date
+    hybrid: float = Field(description="Prediksi hybrid (Prophet + koreksi residual XGBoost), Rp/kg")
+    prophet: float
+    residual: float
+    naive: float = Field(description="Pembanding: harga bulan terakhir dipertahankan")
+    arima: float = Field(description="Pembanding: ARIMA(1,1,0)")
+    decomposition: Optional[PredictionDecomposition] = None
+
+
+class RicePredictionResponse(BaseModel):
+    jenis: str
+    horizon: int
+    origin_date: datetime.date = Field(description="Bulan terakhir pada riwayat harga, titik awal prediksi")
+    origin_price: float
+    steps: List[RiceStep]
+    series: List[TimeSeriesPoint]
+
+
+class RiceMetricRow(BaseModel):
+    horizon: int
+    model: str
+    n_uji: int
+    mape: float
+    mae: float
+    rmse: float
+
+
+class RiceMetricsResponse(BaseModel):
+    jenis: str
+    protokol: str
+    metrik: List[RiceMetricRow]

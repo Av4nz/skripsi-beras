@@ -1,0 +1,110 @@
+{
+  "jenis": {
+    "Bawah I": {
+      "slug": "bawah-i",
+      "phi": 0.3881619706702684,
+      "harga_terakhir": 13150.0,
+      "bulan_terakhir": "2026-05-01"
+    },
+    "Bawah II": {
+      "slug": "bawah-ii",
+      "phi": 0.4064770147234171,
+      "harga_terakhir": 12150.0,
+      "bulan_terakhir": "2026-05-01"
+    },
+    "Medium I": {
+      "slug": "medium-i",
+      "phi": 0.33321976718184376,
+      "harga_terakhir": 14900.0,
+      "bulan_terakhir": "2026-05-01"
+    },
+    "Medium II": {
+      "slug": "medium-ii",
+      "phi": 0.34743542930294086,
+      "harga_terakhir": 14150.0,
+      "bulan_terakhir": "2026-05-01"
+    },
+    "Super I": {
+      "slug": "super-i",
+      "phi": 0.37156702806351444,
+      "harga_terakhir": 16000.0,
+      "bulan_terakhir": "2026-05-01"
+    },
+    "Super II": {
+      "slug": "super-ii",
+      "phi": 0.3562129255299056,
+      "harga_terakhir": 15000.0,
+      "bulan_terakhir": "2026-05-01"
+    }
+  },
+  "lebaran": [
+    [
+      2021,
+      5
+    ],
+    [
+      2022,
+      5
+    ],
+    [
+      2023,
+      4
+    ],
+    [
+      2024,
+      4
+    ],
+    [
+      2025,
+      3
+    ],
+    [
+      2026,
+      3
+    ],
+    [
+      2027,
+      3
+    ],
+    [
+      2028,
+      2
+    ]
+  ],
+  "fitur_xgb": [
+    "resid_lag1",
+    "resid_lag2",
+    "price_t",
+    "price_t1",
+    "price_t2",
+    "rolling_mean_3",
+    "diff_t",
+    "month_sin",
+    "month_cos",
+    "lebaran_next"
+  ],
+  "prophet": {
+    "changepoint_prior_scale": 0.1,
+    "seasonality_prior_scale": 0.1,
+    "seasonality_mode": "multiplicative",
+    "yearly_order": 3,
+    "use_exog": false,
+    "reg_prior_scale": null
+  },
+  "xgb": {
+    "n_estimators": 50,
+    "learning_rate": 0.01,
+    "max_depth": 2,
+    "subsample": 0.6,
+    "colsample_bytree": 1.0,
+    "min_child_weight": 1,
+    "gamma": 0.0,
+    "reg_alpha": 0.0,
+    "reg_lambda": 5.0
+  },
+  "metode_phi": "kuadrat terkecil bersyarat pada selisih harga",
+  "data_awal": "2021-01-01",
+  "data_akhir": "2026-05-01",
+  "jumlah_bulan": 65,
+  "cutoff": null
+}

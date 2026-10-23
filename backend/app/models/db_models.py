@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, DateTime
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, UniqueConstraint
 from app.core.database import Base
 import datetime
 
@@ -13,6 +13,17 @@ class HargaBeras(Base):
     curah_hujan = Column(Float, nullable=True)
     produksi_padi = Column(Float, nullable=True)
     inflasi_pangan = Column(Float, nullable=True)
+
+class HargaBerasJenis(Base):
+    """Harga bulanan rata-rata per jenis beras PIHPS (DIY). Tabel baru, tidak mengubah harga_beras."""
+    __tablename__ = "harga_beras_jenis"
+
+    id = Column(Integer, primary_key=True, index=True)
+    jenis = Column(String, index=True, nullable=False)
+    date = Column(Date, index=True, nullable=False)
+    price = Column(Float, nullable=False)
+    __table_args__ = (UniqueConstraint("jenis", "date", name="uq_jenis_date"),)
+
 
 class Metrics(Base):
     __tablename__ = "metrics"

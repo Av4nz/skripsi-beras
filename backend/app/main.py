@@ -5,7 +5,9 @@ from contextlib import asynccontextmanager
 
 from app.core.database import engine, Base
 from app.services.model_loader import load_models
+from app.services.rice_predictor import load_rice_models
 from app.api.routes import router as api_router
+from app.api.rice_routes import router as rice_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,6 +15,7 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     # Load ML models
     load_models()
+    load_rice_models()
     yield
     # Cleanup if needed
 
@@ -40,3 +43,4 @@ def health_check():
     return {"status": "ok", "service": "Hybrid Prediction API"}
 
 app.include_router(api_router)
+app.include_router(rice_router)

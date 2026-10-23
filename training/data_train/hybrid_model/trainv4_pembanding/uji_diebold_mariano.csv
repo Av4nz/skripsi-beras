@@ -1,0 +1,23 @@
+A,B,loss,DM,p,lebih_baik
+Naive,"ARIMA(1,1,0) 2018",kuadrat,0.55,0.585,"ARIMA(1,1,0) 2018"
+Naive,"ARIMA(1,1,0) 2018",absolut,-0.9,0.375,Naive
+Naive,"ARIMA(1,1,0) 2021",kuadrat,0.01,0.989,"ARIMA(1,1,0) 2021"
+Naive,"ARIMA(1,1,0) 2021",absolut,-1.07,0.294,Naive
+Naive,AR(1) 2021,kuadrat,-0.05,0.963,Naive
+Naive,AR(1) 2021,absolut,-2.91,0.007,Naive
+Naive,XGBoost-only,kuadrat,-0.45,0.659,Naive
+Naive,XGBoost-only,absolut,-2.66,0.013,Naive
+Naive,Hybrid,kuadrat,-3.24,0.003,Naive
+Naive,Hybrid,absolut,-5.33,0.0,Naive
+Naive,Prophet,kuadrat,-3.43,0.002,Naive
+Naive,Prophet,absolut,-5.49,0.0,Naive
+"ARIMA(1,1,0) 2021",XGBoost-only,kuadrat,-0.35,0.729,"ARIMA(1,1,0) 2021"
+"ARIMA(1,1,0) 2021",XGBoost-only,absolut,-0.89,0.382,"ARIMA(1,1,0) 2021"
+"ARIMA(1,1,0) 2021",Prophet,kuadrat,-3.53,0.001,"ARIMA(1,1,0) 2021"
+"ARIMA(1,1,0) 2021",Prophet,absolut,-5.42,0.0,"ARIMA(1,1,0) 2021"
+Hybrid,Prophet,kuadrat,-4.69,0.0,Hybrid
+Hybrid,Prophet,absolut,-4.63,0.0,Hybrid
+XGBoost-only,Prophet,kuadrat,-3.49,0.002,XGBoost-only
+XGBoost-only,Prophet,absolut,-4.88,0.0,XGBoost-only
+XGBoost-only,Hybrid,kuadrat,-3.29,0.003,XGBoost-only
+XGBoost-only,Hybrid,absolut,-4.68,0.0,XGBoost-only

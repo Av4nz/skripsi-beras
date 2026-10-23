@@ -15,14 +15,14 @@ import {
   BadgeInfo,
 } from "lucide-react";
 import { apiService } from "@/services/api";
-import { MetricsSchema } from "@/types/api";
+import { RiceMetricRow } from "@/types/api";
 import { cn, formatPersen } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Metodologi & Arsitektur",
   description:
-    "Penjelasan metodologi Hybrid Forecasting (Prophet + XGBoost), sumber data, dan arsitektur sistem prediksi harga beras.",
+    "Penjelasan metodologi prediksi harga beras (Prophet + XGBoost), pembanding sederhana, sumber data, dan keterbatasan sistem.",
 };
 
 export const dynamic = "force-dynamic";
@@ -30,21 +30,14 @@ export const dynamic = "force-dynamic";
 const rupiah = (v: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v);
 
-// MAPE (%) dari rolling backtest yang sama, dibedakan hanya oleh informasi yang
-// tersedia saat prediksi dibuat.
-// Sumber: training/data_train/hybrid_model/trainv2/experiment_final_check.json
-const AKURASI_PER_KONDISI = [
-  {
-    kondisi: "Faktor eksternal bulan target diketahui (mode skenario)",
-    tahun: [3.78, 2.72, 1.3],
-    agregat: 2.92,
-  },
-  {
-    kondisi: "Hanya data sampai bulan sebelumnya",
-    tahun: [15.21, 7.93, 1.97],
-    agregat: 9.91,
-  },
-];
+const JENIS_ACUAN = "Medium II";
+const NAMA_MODEL: Record<string, string> = {
+  naive: "Harga bulan ini dipertahankan",
+  arima: "ARIMA(1,1,0)",
+  prophet: "Prophet",
+  hybrid: "Hybrid (Prophet + XGBoost)",
+};
+const URUTAN_MODEL = ["naive", "arima", "prophet", "hybrid"];
 
 function FlowStep({
   icon,
@@ -88,25 +81,28 @@ const dataSources = [
   {
     icon: <Wheat />,
     name: "PIHPS Nasional",
-    items: ["Harga Beras Medium II — DI Yogyakarta (variabel target)"],
+    items: [
+      "Harga beras DI Yogyakarta menurut jenis: Bawah I dan II, Medium I dan II, Super I dan II",
+      "Rata-rata harian per bulan, Januari 2021 sampai Mei 2026",
+    ],
     iconClass: "bg-primary/10 text-primary",
   },
   {
     icon: <Database />,
     name: "Badan Pangan Nasional (Bapanas)",
-    items: ["Harga Gabah Kering Giling (GKG)"],
+    items: ["Harga Gabah Kering Giling (GKG), ditampilkan sebagai informasi"],
     iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
   },
   {
     icon: <CloudRain />,
     name: "Open-Meteo API",
-    items: ["Curah hujan historis (reanalisis cuaca)"],
+    items: ["Curah hujan historis, ditampilkan sebagai informasi"],
     iconClass: "bg-accent/20 text-accent-foreground dark:text-accent",
   },
   {
     icon: <Database />,
     name: "Badan Pusat Statistik (BPS)",
-    items: ["Produksi padi", "Inflasi pangan"],
+    items: ["Produksi padi", "Inflasi pangan", "Keduanya ditampilkan sebagai informasi"],
     iconClass: "bg-secondary/15 text-secondary dark:text-secondary-foreground",
   },
 ];
@@ -125,12 +121,17 @@ const techStack = [
 ];
 
 export default async function AboutPage() {
-  let metricsData: MetricsSchema[] = [];
+  let metrik: RiceMetricRow[] = [];
+  let protokol = "";
   try {
-    metricsData = await apiService.getMetrics();
+    const m = await apiService.getMetrik(JENIS_ACUAN);
+    metrik = m.metrik;
+    protokol = m.protokol;
   } catch (error) {
     console.error("Failed to fetch metrics", error);
   }
+  const baris = (model: string, h: number) => metrik.find((x) => x.model === model && x.horizon === h);
+  const HORIZON_TAMPIL = [1, 3, 6];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
@@ -145,7 +146,8 @@ export default async function AboutPage() {
         <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
           Sistem menggabungkan <span className="font-medium text-foreground">Prophet</span> dan{" "}
           <span className="font-medium text-foreground">XGBoost</span> dalam satu model hybrid untuk
-          memprediksi harga Beras Medium II secara akurat dan transparan.
+          memproyeksikan harga beras menurut jenis, lalu membandingkannya secara terbuka dengan dua
+          pembanding sederhana.
         </p>
       </header>
 
@@ -153,22 +155,22 @@ export default async function AboutPage() {
       <Card className="mt-12">
         <CardHeader className="text-center">
           <CardTitle>Alur Model Hybrid</CardTitle>
-          <CardDescription>Dari data historis hingga prediksi akhir</CardDescription>
+          <CardDescription>Dari riwayat harga hingga prediksi akhir</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center gap-3 py-2">
             <FlowStep
               icon={<Database />}
               iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
-              title="Data Historis"
-              desc="Deret waktu bulanan harga beras + faktor eksternal"
+              title="Riwayat Harga"
+              desc="Deret waktu bulanan harga satu jenis beras"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep
               icon={<Activity />}
               iconClass="bg-primary/10 text-primary"
               title="Prediksi Prophet"
-              desc="Menangkap tren, musiman & pengaruh faktor eksternal (regressor)"
+              desc="Menangkap tren, pola musiman tahunan, dan penanda Idulfitri"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep
@@ -182,7 +184,7 @@ export default async function AboutPage() {
               icon={<Cpu />}
               iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
               title="XGBoost Koreksi Residual"
-              desc="Mengoreksi sisa galat dari pola riwayat harga (lag & residual)"
+              desc="Mengoreksi sisa galat dari pola riwayat harga (lag dan residual)"
             />
             <ArrowDown className="size-5 text-muted-foreground" />
             <FlowStep
@@ -230,52 +232,54 @@ export default async function AboutPage() {
           <CardContent className="space-y-3 text-muted-foreground">
             <p>
               Model tunggal sering kurang optimal menangkap semua pola pada data ekonomi. Harga beras
-              punya tren &amp; musiman yang kuat, tetapi juga volatil akibat cuaca dan kebijakan.
+              punya tren dan pola musiman, tetapi juga dipengaruhi cuaca dan kebijakan.
             </p>
             <p>
               Arsitektur hybrid menggabungkan <span className="font-medium text-foreground">Prophet</span>{" "}
-              (menangkap tren, musiman, dan pengaruh faktor eksternal sebagai regressor) dengan{" "}
+              (tren dan pola musiman) dengan{" "}
               <span className="font-medium text-foreground">XGBoost</span>{" "}
-              (mengoreksi sisa galat Prophet dari pola riwayat harga).
+              (mengoreksi sisa galat Prophet dari pola riwayat harga). Keunggulannya diuji secara
+              terbuka terhadap pembanding sederhana di bawah.
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Recursive Forecasting</CardTitle>
+            <CardTitle>Prediksi Beberapa Bulan</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-muted-foreground">
             <p>
-              Prediksi multi-periode memakai <span className="font-medium text-foreground">recursive
-              multi-step forecasting</span>: hasil bulan pertama menjadi input (lag) untuk bulan
-              berikutnya, dan seterusnya.
+              Prediksi lebih dari satu bulan memakai{" "}
+              <span className="font-medium text-foreground">recursive multi-step forecasting</span>: hasil
+              bulan pertama menjadi masukan bulan berikutnya.
             </p>
             <p>
-              Teknik ini menampilkan tren jangka menengah dengan satu model, meski akumulasi galat perlu
-              diawasi dengan cermat.
+              Galat membesar seiring jumlah bulan, seperti terlihat pada tabel pengujian di bawah. Karena
+              itu satu bulan ke depan adalah horizon yang paling dapat dipertanggungjawabkan.
             </p>
           </CardContent>
         </Card>
 
-        {/* Variabel */}
+        {/* Faktor sebagai informasi */}
         <Card>
           <CardHeader>
-            <CardTitle>Variabel Prediksi (Faktor Eksternal)</CardTitle>
+            <CardTitle>Faktor yang Memengaruhi Harga</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {["Harga GKG", "Curah Hujan", "Produksi Padi", "Inflasi Pangan", "Faktor Lebaran"].map((v) => (
+              {["Harga GKG", "Curah Hujan", "Produksi Padi", "Inflasi Pangan"].map((v) => (
                 <Badge key={v} variant="muted">
                   {v}
                 </Badge>
               ))}
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Variabel ini menjadi <span className="font-medium text-foreground">regressor Prophet</span>{" "}
-              yang membentuk prediksi dasar. Sistem bersifat{" "}
-              <span className="font-medium text-foreground">skenario</span>: prediksi diberikan pada
-              kondisi faktor eksternal yang diasumsikan pengguna.
+              Data lampau faktor ini ditampilkan pada halaman Data Historis sebagai{" "}
+              <span className="font-medium text-foreground">informasi</span> dan tidak dimasukkan
+              pengguna. Pada pengujian, memasukkan faktor bulan berjalan sebagai fitur model tidak
+              meningkatkan ketepatan prediksi harga bulan berikutnya, sehingga model sistem hanya
+              memakai riwayat harga dan kalender.
             </p>
           </CardContent>
         </Card>
@@ -288,11 +292,11 @@ export default async function AboutPage() {
           <CardContent>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {[
-                "Sistem bersifat skenario: akurasi berlaku ketika kondisi faktor eksternal pada periode target diketahui atau diasumsikan.",
-                "Prediksi adalah estimasi berbasis data historis & variabel yang tersedia.",
+                "Prediksi adalah estimasi dari pola riwayat harga, bukan kepastian harga.",
+                "Pada data pengujian, mempertahankan harga bulan ini lebih akurat daripada model hybrid.",
+                "Data hanya mencakup 65 bulan (Januari 2021 sampai Mei 2026) dan satu wilayah, DI Yogyakarta.",
+                "Keenam jenis beras bergerak serempak, sehingga hasil per jenis bukan bukti yang saling bebas.",
                 "Kebijakan pemerintah, kondisi pasar, atau kejadian tak terduga dapat memengaruhi harga aktual.",
-                "Faktor di luar dataset tidak dapat dimodelkan sistem.",
-                "Hasil prediksi tidak menjamin harga aktual di masa mendatang.",
               ].map((it) => (
                 <li key={it} className="flex gap-2">
                   <span className="mt-2 size-1 shrink-0 rounded-full bg-muted-foreground/60" />
@@ -304,17 +308,17 @@ export default async function AboutPage() {
         </Card>
       </div>
 
-      {/* Metrics comparison */}
-      {metricsData.length > 0 && (
+      {/* Perbandingan model dari hasil pengujian */}
+      {metrik.length > 0 && (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="size-5 text-primary" />
-              Perbandingan Performa Model
+              Hasil Pengujian Model
             </CardTitle>
             <CardDescription>
-              Prophet = prediksi dasar; Hybrid = setelah koreksi residual (model yang dipakai sistem).
-              Evaluasi mode skenario, rolling backtest 2024–2026.
+              MAPE (%) untuk Beras {JENIS_ACUAN}, semakin kecil semakin baik. Model sistem adalah
+              Hybrid. {protokol && `Protokol: ${protokol}.`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -323,93 +327,45 @@ export default async function AboutPage() {
                 <TableHeader>
                   <TableRow className="bg-muted/40">
                     <TableHead>Model</TableHead>
-                    <TableHead className="text-right">MAPE (%)</TableHead>
-                    <TableHead className="text-right">MAE (Rp)</TableHead>
-                    <TableHead className="text-right">RMSE (Rp)</TableHead>
+                    {HORIZON_TAMPIL.map((h) => (
+                      <TableHead key={h} className="text-right">
+                        {h} bulan
+                      </TableHead>
+                    ))}
+                    <TableHead className="text-right">MAE 1 bulan (Rp)</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {metricsData.map((m) => {
-                    const name = m.model
-                      .split("_")
-                      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                      .join(" ");
-                    const isBest = m.model === "hybrid";
-                    return (
-                      <TableRow key={m.model} className={isBest ? "bg-primary/5" : undefined}>
-                        <TableCell className="font-medium">
-                          <span className="flex items-center gap-2">
-                            {name}
-                            {isBest && <Badge variant="success">Final</Badge>}
-                          </span>
+                  {URUTAN_MODEL.map((model) => (
+                    <TableRow key={model} className={model === "hybrid" ? "bg-primary/5" : undefined}>
+                      <TableCell className="font-medium">
+                        <span className="flex items-center gap-2">
+                          {NAMA_MODEL[model]}
+                          {model === "hybrid" && <Badge variant="success">Model sistem</Badge>}
+                        </span>
+                      </TableCell>
+                      {HORIZON_TAMPIL.map((h) => (
+                        <TableCell key={h} className="text-right tabular-nums">
+                          {baris(model, h) ? formatPersen(baris(model, h)!.mape) : "-"}
                         </TableCell>
-                        <TableCell className="text-right tabular-nums">{formatPersen(m.mape)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{rupiah(m.mae)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{rupiah(m.rmse)}</TableCell>
-                      </TableRow>
-                    );
-                  })}
+                      ))}
+                      <TableCell className="text-right tabular-nums">
+                        {baris(model, 1) ? rupiah(baris(model, 1)!.mae) : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              Pada data ini, mempertahankan harga bulan ini dan ARIMA lebih akurat daripada model hybrid,
+              dan galat hybrid membesar tajam untuk beberapa bulan ke depan. Harga beras DIY sangat
+              stabil: pada sebagian besar bulan, harganya tidak berubah dari bulan sebelumnya. Hasil ini diuji pada
+              data lampau dan tidak menjamin harga di masa depan.
+            </p>
           </CardContent>
         </Card>
       )}
-
-      {/* Akurasi menurut kondisi informasi */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BadgeInfo className="size-5 text-primary" />
-            Akurasi pada Kondisi Realistis
-          </CardTitle>
-          <CardDescription>
-            Angka di atas berlaku pada mode skenario, yaitu ketika kondisi faktor eksternal bulan yang
-            diprediksi sudah diketahui atau diasumsikan pengguna.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Pada pemakaian sehari-hari, nilai faktor eksternal bulan depan belum tersedia. Bila sistem
-            hanya memakai data bulan terakhir yang ada, seperti nilai bawaan pada halaman prediksi,
-            galatnya menjadi lebih besar. Perbandingan berikut memakai konfigurasi model yang sama dan
-            hanya berbeda pada informasi yang tersedia saat prediksi dibuat.
-          </p>
-          <div className="mt-4 overflow-x-auto rounded-xl border border-border/70">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/40">
-                  <TableHead>Kondisi informasi</TableHead>
-                  <TableHead className="text-right">2024</TableHead>
-                  <TableHead className="text-right">2025</TableHead>
-                  <TableHead className="text-right">2026</TableHead>
-                  <TableHead className="text-right">Agregat</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {AKURASI_PER_KONDISI.map((baris) => (
-                  <TableRow key={baris.kondisi}>
-                    <TableCell className="font-medium">{baris.kondisi}</TableCell>
-                    {baris.tahun.map((nilai, i) => (
-                      <TableCell key={i} className="text-right tabular-nums">
-                        {formatPersen(nilai)}
-                      </TableCell>
-                    ))}
-                    <TableCell className="text-right font-medium tabular-nums">
-                      {formatPersen(baris.agregat)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Selisih terbesar terjadi pada 2024, tahun ketika harga beras melonjak tajam, karena model
-            yang hanya memegang data bulan lalu selalu terlambat menangkap titik balik. Pada periode
-            harga yang relatif stabil seperti 2026, selisihnya kecil.
-          </p>
-        </CardContent>
-      </Card>
 
       {/* Tech stack */}
       <section className="mt-12 text-center">

@@ -33,9 +33,9 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-              Sistem prediksi harga Beras Medium II di Daerah Istimewa Yogyakarta
+              Sistem prediksi harga beras menurut jenis di Daerah Istimewa Yogyakarta
               berbasis <span className="font-medium text-foreground">Hybrid Model</span> (Prophet + XGBoost).
-              Menyajikan informasi harga yang akurat dan transparan untuk masyarakat.
+              Menyajikan harga dan prediksi beserta hasil pengujiannya secara terbuka.
             </p>
           </div>
 

@@ -21,9 +21,17 @@ import {
   rupiahCompact,
 } from "@/components/charts/chart-theme";
 
+export interface ComparisonPoint {
+  date: string;
+  naive: number;
+  arima: number;
+}
+
 interface ForecastChartProps {
   historicalData: HargaBerasSchema[];
   predictions?: StepDetail[];
+  /** Pembanding sederhana (opsional): harga bulan ini dipertahankan dan ARIMA. */
+  comparison?: ComparisonPoint[];
   className?: string;
 }
 
@@ -32,11 +40,14 @@ interface ChartDataPoint {
   price: number | null;
   predicted: number | null;
   prophet: number | null;
+  naive: number | null;
+  arima: number | null;
 }
 
 export function ForecastChart({
   historicalData,
   predictions = [],
+  comparison = [],
   className,
 }: ForecastChartProps) {
   const data: ChartDataPoint[] = [...historicalData].map((d) => ({
@@ -44,15 +55,21 @@ export function ForecastChart({
     price: d.price,
     predicted: null,
     prophet: null,
+    naive: null,
+    arima: null,
   }));
 
   if (predictions.length > 0) {
+    const cmp = new Map(comparison.map((c) => [c.date, c]));
     predictions.forEach((p) => {
+      const c = cmp.get(p.date);
       data.push({
         date: p.date,
         price: null,
         predicted: p.final_prediction,
         prophet: p.yhat,
+        naive: c ? c.naive : null,
+        arima: c ? c.arima : null,
       });
     });
 
@@ -63,6 +80,10 @@ export function ForecastChart({
       if (match) {
         match.predicted = lastHist.price;
         match.prophet = lastHist.price;
+        if (comparison.length > 0) {
+          match.naive = lastHist.price;
+          match.arima = lastHist.price;
+        }
       }
     }
   }
@@ -132,6 +153,30 @@ export function ForecastChart({
                 dot={false}
                 connectNulls
               />
+              {comparison.length > 0 && (
+                <>
+                  <Line
+                    type="monotone"
+                    dataKey="naive"
+                    name="Harga bulan ini dipertahankan"
+                    stroke="var(--muted-foreground)"
+                    strokeWidth={2}
+                    strokeDasharray="2 4"
+                    dot={false}
+                    connectNulls
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="arima"
+                    name="ARIMA"
+                    stroke="var(--chart-3)"
+                    strokeWidth={2}
+                    strokeDasharray="8 3"
+                    dot={false}
+                    connectNulls
+                  />
+                </>
+              )}
               <Line
                 type="monotone"
                 dataKey="predicted"
