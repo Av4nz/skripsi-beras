@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Area,
   CartesianGrid,
   ComposedChart,
   Line,
@@ -16,10 +15,14 @@ import { cn } from "@/lib/utils";
 import {
   axisTick,
   ChartTooltip,
+  domainHarga,
   legendFormatter,
   monthShort,
-  rupiahCompact,
+  rupiahAxis,
 } from "@/components/charts/chart-theme";
+
+// Biru sedang, terbaca pada tema terang dan gelap. Prophet memakai aksen cokelat, jadi ARIMA tidak boleh sama.
+const WARNA_ARIMA = "#4F8BB5";
 
 export interface ComparisonPoint {
   date: string;
@@ -92,12 +95,6 @@ export function ForecastChart({
     <div className={cn("h-[300px] w-full min-w-0 overflow-hidden sm:h-[400px]", className)}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 8 }}>
-          <defs>
-            <linearGradient id="forecastActualFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--chart-5)" stopOpacity={0.18} />
-              <stop offset="100%" stopColor="var(--chart-5)" stopOpacity={0} />
-            </linearGradient>
-          </defs>
           <CartesianGrid
             strokeDasharray="4 4"
             vertical={false}
@@ -114,11 +111,13 @@ export function ForecastChart({
             minTickGap={24}
           />
           <YAxis
-            tickFormatter={rupiahCompact}
+            domain={domainHarga}
+            allowDecimals={false}
+            tickFormatter={rupiahAxis}
             tick={axisTick}
             tickLine={false}
             axisLine={false}
-            width={44}
+            width={56}
           />
           <Tooltip
             content={<ChartTooltip />}
@@ -130,13 +129,12 @@ export function ForecastChart({
             formatter={legendFormatter}
             wrapperStyle={{ paddingTop: 16 }}
           />
-          <Area
+          <Line
             type="monotone"
             dataKey="price"
             name="Harga Aktual"
             stroke="var(--chart-5)"
-            strokeWidth={2}
-            fill="url(#forecastActualFill)"
+            strokeWidth={2.5}
             dot={false}
             activeDot={{ r: 5, strokeWidth: 0 }}
             connectNulls
@@ -162,17 +160,17 @@ export function ForecastChart({
                     stroke="var(--muted-foreground)"
                     strokeWidth={2}
                     strokeDasharray="2 4"
-                    dot={false}
+                    dot={{ r: 4, strokeWidth: 0, fill: "var(--muted-foreground)" }}
                     connectNulls
                   />
                   <Line
                     type="monotone"
                     dataKey="arima"
                     name="ARIMA"
-                    stroke="var(--chart-3)"
+                    stroke={WARNA_ARIMA}
                     strokeWidth={2}
                     strokeDasharray="8 3"
-                    dot={false}
+                    dot={{ r: 4, strokeWidth: 0, fill: WARNA_ARIMA }}
                     connectNulls
                   />
                 </>

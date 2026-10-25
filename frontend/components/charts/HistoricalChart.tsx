@@ -15,9 +15,10 @@ import { cn } from "@/lib/utils";
 import {
   axisTick,
   ChartTooltip,
+  domainHarga,
   legendFormatter,
   monthShort,
-  rupiahCompact,
+  rupiahAxis,
 } from "@/components/charts/chart-theme";
 
 interface HistoricalChartProps {
@@ -52,11 +53,13 @@ export function HistoricalChart({ data, className }: HistoricalChartProps) {
             minTickGap={24}
           />
           <YAxis
-            tickFormatter={rupiahCompact}
+            domain={domainHarga}
+            allowDecimals={false}
+            tickFormatter={rupiahAxis}
             tick={axisTick}
             tickLine={false}
             axisLine={false}
-            width={44}
+            width={56}
           />
           <Tooltip
             content={<ChartTooltip />}

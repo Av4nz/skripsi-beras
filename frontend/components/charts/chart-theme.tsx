@@ -13,6 +13,20 @@ export const rupiahCompact = (v: number) =>
     compactDisplay: "short",
   }).format(v);
 
+/** Label sumbu harga dengan angka penuh (mis. 14.200), supaya tick yang berdekatan tidak tampil sama. */
+export const rupiahAxis = (v: number) =>
+  new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(v);
+
+/**
+ * Domain sumbu Y yang mengikuti data, bukan mulai dari nol. Harga beras bergerak sempit dan selisih
+ * antarmodel hanya ratusan rupiah, sehingga sumbu dari nol membuat semua garis tampak datar.
+ * Batas dibulatkan ke kelipatan 100 dengan ruang 100 di luar nilai terendah dan tertinggi.
+ */
+export const domainHarga: [(min: number) => number, (max: number) => number] = [
+  (min) => Math.floor((min - 100) / 100) * 100,
+  (max) => Math.ceil((max + 100) / 100) * 100,
+];
+
 export const monthShort = (dateStr: string) => {
   const d = new Date(dateStr);
   return new Intl.DateTimeFormat("id-ID", { month: "short", year: "2-digit" }).format(d);
