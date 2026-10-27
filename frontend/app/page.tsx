@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const JENIS_UTAMA = "Medium II";
+const JENIS_BAWAAN = "Medium II";
 const HORIZON_BERANDA = 1;
 
 const formatRupiah = (v: number) =>
@@ -69,17 +69,27 @@ function InsightCard({
   );
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const diminta = (await searchParams).jenis;
+  let jenisList: string[] = [];
+  let jenis = JENIS_BAWAAN;
   let metrik: RiceMetricRow[] = [];
   let historical: HargaJenisPoint[] = [];
   let prediksi: RicePredictionResponse | null = null;
   let hasError = false;
 
   try {
+    jenisList = await apiService.getJenis();
+    const pilihan = Array.isArray(diminta) ? diminta[0] : diminta;
+    if (pilihan && jenisList.includes(pilihan)) jenis = pilihan;
     [historical, prediksi, metrik] = await Promise.all([
-      apiService.getHistoris(JENIS_UTAMA, 24),
-      apiService.getPrediksi(JENIS_UTAMA, HORIZON_BERANDA),
-      apiService.getMetrik(JENIS_UTAMA).then((m) => m.metrik),
+      apiService.getHistoris(jenis, 24),
+      apiService.getPrediksi(jenis, HORIZON_BERANDA),
+      apiService.getMetrik(jenis).then((m) => m.metrik),
     ]);
   } catch (error) {
     console.error("Failed to fetch data from backend:", error);
@@ -181,7 +191,7 @@ export default async function Home() {
           {/* Hero price stat */}
           <div className="rounded-3xl border border-border/60 bg-card/80 p-6 shadow-xl shadow-primary/5 backdrop-blur-sm sm:p-8">
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Coins className="size-4 text-primary" /> Harga Beras {JENIS_UTAMA} · DIY
+              <Coins className="size-4 text-primary" /> Harga Beras {jenis} · DIY
             </div>
             <div className="mt-4 flex items-end gap-2">
               <span className="font-sans text-5xl font-bold tracking-tight tabular-nums text-foreground sm:text-6xl">
@@ -204,12 +214,42 @@ export default async function Home() {
       </section>
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Pemilih jenis beras */}
+        {jenisList.length > 0 && (
+          <nav aria-labelledby="label-jenis-beranda" className="pt-8">
+            <p id="label-jenis-beranda" className="text-sm font-medium text-foreground">
+              Jenis Beras
+            </p>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {jenisList.map((j) => (
+                <Link
+                  key={j}
+                  href={j === JENIS_BAWAAN ? "/" : `/?jenis=${encodeURIComponent(j)}`}
+                  scroll={false}
+                  aria-current={j === jenis ? "page" : undefined}
+                  className={cn(
+                    "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                    j === jenis
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  {j}
+                </Link>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Harga, prediksi, sorotan, dan akurasi di halaman ini mengikuti jenis yang dipilih.
+            </p>
+          </nav>
+        )}
+
         {/* Forecast overview */}
         <section className="py-14 sm:py-16">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl">
-                Prediksi bulan depan: Beras {JENIS_UTAMA}
+                Prediksi bulan depan: Beras {jenis}
               </h2>
               <p className="mt-1.5 text-muted-foreground">
                 Titik awal prediksi adalah bulan terakhir pada riwayat harga ({rangeEnd}). Model hybrid
@@ -286,7 +326,7 @@ export default async function Home() {
               icon={<Minus />}
               iconClass="bg-secondary/15 text-secondary dark:text-secondary-foreground"
               title="Harga Sering Tidak Berubah"
-              desc={`Dalam ${historical.length > 1 ? historical.length - 1 : 0} bulan terakhir, harga ${JENIS_UTAMA} tidak berubah pada ${persenTetap}% bulan. Karena itu mempertahankan harga bulan ini sulit dikalahkan sebagai prediksi.`}
+              desc={`Dalam ${historical.length > 1 ? historical.length - 1 : 0} bulan terakhir, harga ${jenis} tidak berubah pada ${persenTetap}% bulan. Karena itu mempertahankan harga bulan ini sulit dikalahkan sebagai prediksi.`}
             />
             <InsightCard
               icon={<Activity />}
@@ -305,7 +345,7 @@ export default async function Home() {
             </h2>
             <p className="mt-1.5 max-w-2xl text-muted-foreground">
               Galat rata-rata persentase (MAPE) untuk prediksi satu bulan ke depan, diuji berjalan pada
-              Januari 2024 sampai Mei 2026 untuk Beras {JENIS_UTAMA}
+              Januari 2024 sampai Mei 2026 untuk Beras {jenis}
               {mHybrid ? ` (${mHybrid.n_uji} titik uji)` : ""}. Semakin kecil semakin baik.
             </p>
           </div>
