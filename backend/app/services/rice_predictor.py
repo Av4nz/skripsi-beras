@@ -5,19 +5,21 @@ Tanpa faktor eksternal, tanpa penanda Lebaran, dan tanpa masukan faktor dari pen
   - jenis beras
   - horizon (bulan)
 Titik awal prediksi adalah bulan terakhir yang tersedia pada riwayat harga jenis itu
-(bukan bulan yang dipatok). Pembanding: naive dan ARIMA(1,1,0) (AR(1) pada selisih).
+(bukan bulan yang dipatok). Pembanding: naive dan ARIMA(1,1,0) (statsmodels, sama dengan evaluasi).
 
 Modul ini tidak mengimpor FastAPI maupun SQLAlchemy supaya dapat diuji terpisah.
 """
 import json
 import os
 import threading
+import warnings
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 import joblib
 import numpy as np
 import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../"))
@@ -107,7 +109,6 @@ def predict_rice(jenis: str, history: pd.Series, horizon: int) -> List[StepResul
         raise RiceModelError("Riwayat harga kurang dari 6 bulan.")
 
     prophet, xgb = semua_model[jenis]["prophet"], semua_model[jenis]["xgb"]
-    phi = cfg["jenis"][jenis]["phi"]
     last_date = s.index[-1]
     targets = [last_date + pd.DateOffset(months=h) for h in range(1, horizon + 1)]
 
@@ -120,22 +121,31 @@ def predict_rice(jenis: str, history: pd.Series, horizon: int) -> List[StepResul
     fut = prophet.predict(fut_df)
 
     prices = list(s.values)
-    last_price, last_diff = float(s.iloc[-1]), float(s.iloc[-1] - s.iloc[-2])
-    out, arima_price, arima_diff = [], last_price, last_diff
+    last_price = float(s.iloc[-1])
+    arima_path = _ramal_arima(s, horizon)
+    out = []
     for i, t in enumerate(targets):
         yhat = float(fut.loc[i, "yhat"])
         r_hat = float(xgb.predict(_row(prices, resid, t, cfg))[0])
         final = yhat + r_hat
-        arima_diff = phi * arima_diff
-        arima_price += arima_diff
         out.append(StepResult(
             step=i + 1, date=t, prophet=yhat, residual=r_hat, hybrid=final,
-            naive=last_price, arima=arima_price,
+            naive=last_price, arima=float(arima_path[i]),
             decomposition=_decompose(prophet, fut.iloc[[i]]),
         ))
         resid.append(r_hat)      # residual masa depan tidak diketahui: diisi koreksi terprediksi
         prices.append(final)
     return out
+
+
+def _ramal_arima(s: pd.Series, horizon: int) -> np.ndarray:
+    """ARIMA(1,1,0) tanpa konstanta, estimator sama dengan evaluasi (uji_horizon.py): statsmodels pada seluruh riwayat."""
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return np.asarray(ARIMA(s, order=(1, 1, 0), trend="n").fit().forecast(horizon), float)
+    except Exception:
+        return np.repeat(float(s.iloc[-1]), horizon)
 
 
 def _decompose(prophet, row_df):
