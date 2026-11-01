@@ -383,7 +383,7 @@ export default async function Home({
           </div>
           <div className="mt-5 rounded-xl border border-border/70 bg-section-muted p-4 text-sm text-muted-foreground sm:p-5">
             {hybridKalah
-              ? "Pada data ini model hybrid tidak lebih akurat daripada mempertahankan harga bulan ini, dan galatnya membesar untuk beberapa bulan ke depan. "
+              ? "Pada data ini model hybrid tidak lebih akurat daripada mempertahankan harga bulan ini, dan galatnya lebih besar pada horizon yang lebih panjang. "
               : "Pada data ini model hybrid lebih akurat daripada mempertahankan harga bulan ini. "}
             Hasil ini berasal dari pengujian pada data lampau dan tidak menjamin harga di masa depan.{" "}
             <Link

@@ -236,8 +236,9 @@ export default async function AboutPage() {
               bulan pertama menjadi masukan bulan berikutnya.
             </p>
             <p>
-              Galat membesar seiring jumlah bulan, seperti terlihat pada tabel pengujian di bawah. Karena
-              itu satu bulan ke depan adalah horizon yang paling dapat dipertanggungjawabkan.
+              Pada pengujian, galat pada horizon yang lebih panjang secara umum lebih besar, seperti terlihat
+              pada tabel pengujian di bawah. Karena itu satu bulan ke depan adalah horizon yang paling dapat
+              dipertanggungjawabkan.
             </p>
           </CardContent>
         </Card>
@@ -333,7 +334,7 @@ export default async function AboutPage() {
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
               Pada data ini, mempertahankan harga bulan ini dan ARIMA lebih akurat daripada model hybrid,
-              dan galat hybrid membesar tajam untuk beberapa bulan ke depan. Harga beras DIY sangat
+              dan galat hybrid pada horizon enam bulan jauh lebih besar daripada pada horizon satu bulan. Harga beras DIY sangat
               stabil: pada sebagian besar bulan, harganya tidak berubah dari bulan sebelumnya. Hasil ini diuji pada
               data lampau dan tidak menjamin harga di masa depan.
             </p>

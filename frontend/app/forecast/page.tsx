@@ -179,8 +179,8 @@ export default function ForecastPage() {
                   onValueChange={(val) => pilihHorizon(Array.isArray(val) ? val[0] : val)}
                 />
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Galat membesar seiring jumlah bulan. Satu bulan adalah horizon yang paling dapat
-                  dipertanggungjawabkan.
+                  Pada pengujian, galat hybrid pada horizon yang lebih panjang lebih besar. Satu bulan
+                  adalah horizon yang paling dapat dipertanggungjawabkan.
                 </p>
               </div>
             </CardContent>
