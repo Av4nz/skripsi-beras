@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../"))
 ARTIFACT_DIR = os.path.join(ROOT_DIR, "ml_models", "beras")
 
-MAX_HORIZON = 6   # uji horizon 1 sampai 6 bulan; galat membesar seiring horizon
+MAX_HORIZON = 6   # uji horizon 1 sampai 6 bulan; galat hybrid lebih besar pada horizon panjang
 
 _state: Dict = {"bundle": None}   # (config, models), diganti utuh agar pembaca tidak melihat setengah-baru
 _kunci = threading.Lock()
